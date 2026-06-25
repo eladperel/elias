@@ -226,6 +226,15 @@ textarea { height: 120px; resize: vertical; }
   <div class="logo-center"><h1>אליאס</h1><p>ממשק מנחה</p></div>
 
   <div class="card">
+    <div class="card-title">מצב משחק</div>
+    <div class="tc-row" style="margin-bottom:0">
+      <button class="tc-btn active" id="mode-local" onclick="setMode('local')">📺 מנחה בלבד</button>
+      <button class="tc-btn" id="mode-online" onclick="setMode('online')">📱 עם שחקנים</button>
+    </div>
+    <div id="mode-desc" style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:8px;text-align:center">המשחק רץ רק על המסך של המנחה</div>
+  </div>
+
+  <div class="card">
     <div class="card-title">מילות המשחק</div>
     <textarea id="words-input" placeholder="הדבק מילים כאן — שורה אחת לכל מילה&#10;מחשב&#10;ירח&#10;ארנב&#10;..."></textarea>
   </div>
@@ -465,6 +474,21 @@ function getParam(name) {
 
 /* ══════════════ HOST GAME STATE ══════════════ */
 var selectedTC = 3;
+var gameMode = 'local';
+
+function setMode(m) {
+  if (m === 'online' && !FB_URL) {
+    showScreen('screen-fbsetup');
+    return;
+  }
+  gameMode = m;
+  document.getElementById('mode-local').classList.toggle('active', m==='local');
+  document.getElementById('mode-online').classList.toggle('active', m==='online');
+  document.getElementById('mode-desc').textContent = m==='local'
+    ? 'המשחק רץ רק על המסך של המנחה'
+    : 'שחקנים עוקבים מהטלפון בזמן אמת';
+}
+
 var participants = [];
 var assignedTM = [];
 var roomCode = '';
@@ -478,7 +502,7 @@ var S = {
 };
 
 function broadcast(phase) {
-  if (!roomCode) return;
+  if (gameMode === 'local' || !roomCode) return;
   var pub = {
     phase: phase,
     teams: S.teams, teamMembers: S.teamMembers,
@@ -592,6 +616,12 @@ function initGame() {
   var raw = document.getElementById('words-input').value.trim();
   var words = raw.split('\n').map(function(w){ return w.trim(); }).filter(function(w){ return w.length>0; });
   if (words.length<5){ alert('נדרשות לפחות 5 מילים!'); return; }
+
+  if (gameMode === 'local') {
+    document.getElementById('room-bar').classList.remove('visible');
+    startGame(words);
+    return;
+  }
 
   var btn=document.getElementById('start-btn');
   btn.disabled=true; btn.textContent='⏳ מתחיל...';
@@ -822,13 +852,8 @@ var urlRoom = getParam('room');
 var urlDb   = getParam('db');
 
 if (urlRoom && urlDb) {
-  // Player mode - auto join
   startPlayerMode(urlRoom, urlDb);
-} else if (!FB_URL) {
-  // First time - show Firebase setup
-  showScreen('screen-fbsetup');
 } else {
-  // Host mode
   showScreen('screen-setup');
 }
 
