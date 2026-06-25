@@ -4,27 +4,21 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>אליאס — שחקנים</title>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 16px; }
 .container { width: 100%; max-width: 560px; }
 
-.join-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85vh; text-align: center; }
-.join-logo { font-size: 80px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); margin-bottom: 28px; }
-.join-card { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 340px; border: 1px solid rgba(255,255,255,0.2); }
-.join-label { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 10px; }
-.join-input { width: 100%; padding: 14px; background: rgba(0,0,0,0.25); border: 2px solid rgba(255,255,255,0.4); border-radius: 12px; color: #fff; font-size: 32px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; text-align: center; letter-spacing: 8px; text-transform: uppercase; margin-bottom: 14px; }
-.join-input::placeholder { color: rgba(255,255,255,0.3); font-size: 20px; letter-spacing: 2px; }
-.join-btn { width: 100%; padding: 14px; background: #fff; color: #e31e24; border: none; border-radius: 12px; font-size: 18px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; }
-.join-btn:active { transform: scale(0.97); }
-.join-error { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 10px; min-height: 20px; }
+.splash { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85vh; text-align: center; }
+.splash-logo { font-size: 80px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); margin-bottom: 28px; }
+.splash-card { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 340px; border: 1px solid rgba(255,255,255,0.2); }
+.splash-msg { font-size: 18px; color: rgba(255,255,255,0.8); line-height: 1.6; }
+.splash-sub { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 12px; }
 
 .waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; text-align: center; }
 .waiting-logo { font-size: 72px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); margin-bottom: 16px; }
 .waiting-sub { font-size: 18px; color: rgba(255,255,255,0.7); }
-.waiting-code { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 8px; letter-spacing: 2px; }
 .dot-pulse { display: flex; gap: 8px; justify-content: center; margin-top: 24px; }
 .dot { width: 10px; height: 10px; background: rgba(255,255,255,0.6); border-radius: 50%; animation: db 1.2s infinite ease-in-out; }
 .dot:nth-child(2){ animation-delay: 0.2s } .dot:nth-child(3){ animation-delay: 0.4s }
@@ -36,10 +30,9 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 .topbar { background: rgba(0,0,0,0.2); border-radius: 16px; padding: 12px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.15); }
 .topbar-logo  { font-size: 22px; font-weight: 900; letter-spacing: 2px; }
 .topbar-phase { font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-.topbar-code  { font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 2px; }
 
 .scoreboard { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-.score-card { flex: 1; min-width: 90px; background: rgba(0,0,0,0.18); border-radius: 14px; padding: 12px 10px; text-align: center; border: 2px solid transparent; transition: border-color 0.3s; }
+.score-card { flex: 1; min-width: 90px; background: rgba(0,0,0,0.18); border-radius: 14px; padding: 12px 10px; text-align: center; border: 2px solid transparent; }
 .score-card.active-turn { border-color: #ffe066; background: rgba(255,224,102,0.12); }
 .score-card-name    { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 2px; }
 .score-card-members { font-size: 10px; color: rgba(255,255,255,0.4); margin-bottom: 4px; min-height: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -51,16 +44,14 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 .turn-card-label   { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
 .turn-card-team    { font-size: 32px; font-weight: 900; }
 .turn-card-members { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 4px; }
-
 .waiting-round { background: rgba(0,0,0,0.2); border-radius: 14px; padding: 18px; text-align: center; border: 1px solid rgba(255,255,255,0.15); }
 .waiting-round p { font-size: 15px; color: rgba(255,255,255,0.6); }
 
-.timer-section { text-align: center; margin-bottom: 8px; }
-.timer-big { font-size: 110px; font-weight: 900; line-height: 1; }
+.timer-big { font-size: 110px; font-weight: 900; line-height: 1; text-align: center; margin-bottom: 8px; }
 .timer-big.low { animation: blink 0.5s infinite alternate; }
 @keyframes blink { from{opacity:1} to{opacity:0.45} }
 .timer-bar-bg { background: rgba(0,0,0,0.2); border-radius: 6px; height: 8px; margin-bottom: 16px; }
-.timer-bar    { height: 8px; border-radius: 6px; background: rgba(255,255,255,0.8); transition: width 0.9s linear; }
+.timer-bar    { height: 8px; border-radius: 6px; background: rgba(255,255,255,0.8); transition: width 1.5s linear; }
 .timer-bar.low { background: rgba(255,255,255,0.4); }
 
 .word-hidden { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 32px 20px; text-align: center; margin-bottom: 16px; border: 2px dashed rgba(255,255,255,0.2); }
@@ -70,7 +61,7 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 
 .live-counters { display: flex; gap: 10px; margin-bottom: 16px; }
 .counter-box   { flex: 1; background: rgba(0,0,0,0.18); border-radius: 14px; padding: 14px 12px; text-align: center; border: 1px solid rgba(255,255,255,0.15); }
-.counter-label { font-size: 11px; color: rgba(255,255,255,0.55); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.counter-label { font-size: 11px; color: rgba(255,255,255,0.55); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; }
 .counter-val   { font-size: 38px; font-weight: 900; }
 .counter-val.green { color: #2ecc71; }
 .counter-val.red   { color: #ff6b6b; }
@@ -80,7 +71,7 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 .summary-pts-big { font-size: 56px; font-weight: 900; }
 .summary-pts-sub { font-size: 15px; color: rgba(255,255,255,0.7); margin-top: 4px; }
 .words-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
-.word-result-card { border-radius: 10px; padding: 9px 12px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 6px; }
+.word-result-card { border-radius: 10px; padding: 9px 12px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
 .word-result-card.correct { background: rgba(46,204,113,0.2); border: 1px solid rgba(46,204,113,0.4); }
 .word-result-card.skip    { background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.2); color: rgba(255,255,255,0.5); }
 
@@ -92,49 +83,27 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 .final-row:last-child { border-bottom: none; }
 .final-row.winner { color: #ffe066; font-weight: 900; font-size: 18px; }
 .final-row-members { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
-
-.conn-err { background: rgba(0,0,0,0.3); border-radius: 14px; padding: 24px 20px; text-align: center; border: 1px solid rgba(255,255,255,0.15); margin-top: 40px; }
-.conn-err h3 { font-size: 20px; margin-bottom: 8px; }
-.conn-err p  { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 16px; }
-.retry-btn { padding: 12px 28px; background: #fff; color: #e31e24; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; }
 </style>
 </head>
 <body>
 <div class="container">
 
-  <div id="join-screen" class="join-screen">
-    <div class="join-logo">אליאס</div>
-    <div class="join-card">
-      <div class="join-label">הזן קוד חדר</div>
-      <input class="join-input" id="code-input" maxlength="5" placeholder="XXXXX"
-             oninput="this.value=this.value.toUpperCase()"
-             onkeydown="if(event.key==='Enter') joinGame()" />
-      <button class="join-btn" onclick="joinGame()">הצטרף למשחק</button>
-      <div class="join-error" id="join-error"></div>
+  <div id="splash" class="splash">
+    <div class="splash-logo">אליאס</div>
+    <div class="splash-card">
+      <div class="splash-msg">📲 פתח את הקישור שהמנחה שלח לך</div>
+      <div class="splash-sub">אם קיבלת קישור — לחץ עליו כדי להצטרף למשחק</div>
     </div>
   </div>
 
   <div id="waiting-screen" class="waiting" style="display:none">
     <div class="waiting-logo">אליאס</div>
-    <div class="waiting-sub" id="waiting-text">מתחבר...</div>
-    <div class="waiting-code" id="waiting-code"></div>
+    <div class="waiting-sub" id="waiting-text">מתחבר למשחק...</div>
     <div class="dot-pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
   </div>
 
-  <div id="conn-err-screen" style="display:none">
-    <div class="conn-err">
-      <h3>😕 לא ניתן להתחבר</h3>
-      <p id="err-text">בדוק שהקוד נכון והמנחה התחיל את המשחק.</p>
-      <button class="retry-btn" onclick="goBack()">← חזרה</button>
-    </div>
-  </div>
-
   <div id="view-turn-start" class="game-view">
-    <div class="topbar">
-      <div class="topbar-logo">אליאס</div>
-      <div class="topbar-phase">הכנה לסיבוב</div>
-      <div class="topbar-code" id="tc1"></div>
-    </div>
+    <div class="topbar"><div class="topbar-logo">אליאס</div><div class="topbar-phase">הכנה לסיבוב</div></div>
     <div class="scoreboard" id="p-sb-turnstart"></div>
     <div class="turn-card">
       <div class="turn-card-label">תור</div>
@@ -145,12 +114,8 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
   </div>
 
   <div id="view-playing" class="game-view">
-    <div class="topbar">
-      <div class="topbar-logo">אליאס</div>
-      <div class="topbar-phase" id="p-playing-label">משחק</div>
-      <div class="topbar-code" id="tc2"></div>
-    </div>
-    <div class="timer-section"><div class="timer-big" id="p-timer">60</div></div>
+    <div class="topbar"><div class="topbar-logo">אליאס</div><div class="topbar-phase" id="p-playing-label">משחק</div></div>
+    <div class="timer-big" id="p-timer">60</div>
     <div class="timer-bar-bg"><div class="timer-bar" id="p-timer-bar" style="width:100%"></div></div>
     <div class="word-hidden">
       <div class="word-hidden-icon">🙈</div>
@@ -159,18 +124,14 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
     </div>
     <div class="live-counters">
       <div class="counter-box"><div class="counter-label">ניחשו</div><div class="counter-val green" id="p-correct">0</div></div>
-      <div class="counter-box"><div class="counter-label">דילגו</div><div class="counter-val red" id="p-skip">0</div></div>
-      <div class="counter-box"><div class="counter-label">נותרו</div><div class="counter-val gray" id="p-words-left">—</div></div>
+      <div class="counter-box"><div class="counter-label">דילגו</div><div class="counter-val red"   id="p-skip">0</div></div>
+      <div class="counter-box"><div class="counter-label">נותרו</div><div class="counter-val gray"  id="p-words-left">—</div></div>
     </div>
     <div class="scoreboard" id="p-sb-playing"></div>
   </div>
 
   <div id="view-turn-end" class="game-view">
-    <div class="topbar">
-      <div class="topbar-logo">אליאס</div>
-      <div class="topbar-phase">סוף סיבוב</div>
-      <div class="topbar-code" id="tc3"></div>
-    </div>
+    <div class="topbar"><div class="topbar-logo">אליאס</div><div class="topbar-phase">סוף סיבוב</div></div>
     <div class="summary-header">
       <div class="summary-pts-big" id="p-summary-pts">+0</div>
       <div class="summary-pts-sub" id="p-summary-sub"></div>
@@ -180,10 +141,7 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
   </div>
 
   <div id="view-end" class="game-view">
-    <div class="topbar">
-      <div class="topbar-logo">אליאס</div>
-      <div class="topbar-phase">סוף המשחק</div>
-    </div>
+    <div class="topbar"><div class="topbar-logo">אליאס</div><div class="topbar-phase">סוף המשחק</div></div>
     <div class="end-trophy">🏆</div>
     <div class="end-winner"     id="p-end-winner"></div>
     <div class="end-winner-sub" id="p-end-winner-sub"></div>
@@ -192,98 +150,20 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 
 </div>
 <script>
-var roomCode = '';
-var myPeer = null;
-var hostConn = null;
+var BLOB_API = 'https://jsonblob.com/api/jsonBlob';
+var blobId = null;
+var pollInterval = null;
+var lastPhase = null;
 
 function getUrlRoom() {
   var params = new URLSearchParams(window.location.search);
-  return (params.get('room') || '').toUpperCase();
-}
-
-function joinGame() {
-  var code = (document.getElementById('code-input').value || '').trim().toUpperCase();
-  if (code.length !== 5) { document.getElementById('join-error').textContent = 'קוד חדר חייב להיות 5 תווים'; return; }
-  document.getElementById('join-error').textContent = '';
-  connectToHost(code);
-}
-
-function connectToHost(code) {
-  roomCode = code;
-  hideAll();
-  document.getElementById('waiting-screen').style.display = '';
-  document.getElementById('waiting-code').textContent = 'קוד חדר: ' + roomCode;
-  document.getElementById('waiting-text').textContent = 'מתחבר למנחה...';
-
-  var cid = 'alias-player-' + Math.random().toString(16).substr(2, 10);
-  var iceConfig = { iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:openrelay.metered.ca:80' },
-    { urls: 'turn:openrelay.metered.ca:80',               username: 'openrelayproject', credential: 'openrelayproject' },
-    { urls: 'turn:openrelay.metered.ca:443',              username: 'openrelayproject', credential: 'openrelayproject' },
-    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-  ]};
-  myPeer = new Peer(cid, { config: iceConfig });
-
-  var timeout = setTimeout(function() {
-    showError('לא הצלחנו להתחבר. בדוק את החיבור לאינטרנט.');
-  }, 15000);
-
-  myPeer.on('open', function() {
-    clearTimeout(timeout);
-    document.getElementById('waiting-text').textContent = 'מחפש את המנחה...';
-    hostConn = myPeer.connect('alias-game-' + roomCode, { reliable: true });
-
-    var connTimeout = setTimeout(function() {
-      showError('לא מצאנו חדר עם הקוד ' + roomCode + '. בדוק שהמנחה פתח משחק.');
-    }, 10000);
-
-    hostConn.on('open', function() {
-      clearTimeout(connTimeout);
-      document.getElementById('waiting-text').textContent = 'מחובר! ממתין למשחק...';
-    });
-
-    hostConn.on('data', function(rawData) {
-      try {
-        var data = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
-        render(data);
-      } catch(e) {}
-    });
-
-    hostConn.on('close', function() {
-      showError('החיבור למנחה נותק.');
-    });
-
-    hostConn.on('error', function(err) {
-      clearTimeout(connTimeout);
-      showError('שגיאת חיבור: ' + err.message);
-    });
-  });
-
-  myPeer.on('error', function(err) {
-    clearTimeout(timeout);
-    showError('שגיאה: ' + err.message);
-  });
+  return params.get('room') || '';
 }
 
 function hideAll() {
-  document.getElementById('join-screen').style.display = 'none';
+  document.getElementById('splash').style.display = 'none';
   document.getElementById('waiting-screen').style.display = 'none';
-  document.getElementById('conn-err-screen').style.display = 'none';
   document.querySelectorAll('.game-view').forEach(function(v){ v.classList.remove('active'); });
-}
-
-function showError(msg) {
-  hideAll();
-  document.getElementById('err-text').textContent = msg;
-  document.getElementById('conn-err-screen').style.display = 'block';
-  if (myPeer) { myPeer.destroy(); myPeer = null; }
-}
-
-function goBack() {
-  hideAll();
-  document.getElementById('join-screen').style.display = '';
-  document.getElementById('code-input').value = roomCode;
 }
 
 function showView(id) {
@@ -292,11 +172,28 @@ function showView(id) {
   if (el) el.classList.add('active');
 }
 
-function setTopbarCodes() {
-  ['tc1','tc2','tc3'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.textContent = roomCode;
-  });
+function startPolling(id) {
+  blobId = id;
+  hideAll();
+  document.getElementById('waiting-screen').style.display = '';
+  document.getElementById('waiting-text').textContent = 'ממתין למנחה...';
+
+  pollInterval = setInterval(poll, 1500);
+  poll();
+}
+
+function poll() {
+  fetch(BLOB_API + '/' + blobId, { headers: { 'Accept': 'application/json' } })
+    .then(function(r) {
+      if (!r.ok) throw new Error('not found');
+      return r.json();
+    })
+    .then(function(data) {
+      if (data && data.phase && data.phase !== 'waiting') {
+        render(data);
+      }
+    })
+    .catch(function() {});
 }
 
 function buildScoreboard(cid, data) {
@@ -316,17 +213,17 @@ function buildScoreboard(cid, data) {
 }
 
 function render(data) {
-  setTopbarCodes();
-
   if (data.phase === 'turn-start') {
-    showView('turn-start');
-    document.getElementById('p-turn-team').textContent = data.teams[data.currentTeam];
-    var m = data.teamMembers[data.currentTeam];
-    document.getElementById('p-turn-members').textContent = m && m.length ? m.join(' · ') : '';
-    buildScoreboard('p-sb-turnstart', data);
+    if (lastPhase !== 'turn-start' || document.getElementById('p-turn-team').textContent !== data.teams[data.currentTeam]) {
+      showView('turn-start');
+      document.getElementById('p-turn-team').textContent = data.teams[data.currentTeam];
+      var m = data.teamMembers[data.currentTeam];
+      document.getElementById('p-turn-members').textContent = m && m.length ? m.join(' · ') : '';
+      buildScoreboard('p-sb-turnstart', data);
+    }
 
   } else if (data.phase === 'playing') {
-    showView('playing');
+    if (lastPhase !== 'playing') showView('playing');
     var low = data.timeLeft <= 10;
     var te = document.getElementById('p-timer');
     te.textContent = data.timeLeft;
@@ -342,39 +239,45 @@ function render(data) {
     buildScoreboard('p-sb-playing', data);
 
   } else if (data.phase === 'turn-end') {
-    showView('turn-end');
-    document.getElementById('p-summary-pts').textContent = '+' + data.correctCount + ' נקודות';
-    document.getElementById('p-summary-sub').textContent =
-      data.teams[data.currentTeam] + ' — ניחשו ' + data.correctCount +
-      (data.skipCount ? ', דילגו ' + data.skipCount : '');
-    document.getElementById('p-words-grid').innerHTML =
-      (data.roundCorrectWords || []).map(function(w) {
-        return '<div class="word-result-card correct"><span>' + w + '</span><span>✓</span></div>';
-      }).join('') +
-      (data.roundSkippedWords || []).map(function(w) {
-        return '<div class="word-result-card skip"><span>' + w + '</span><span>—</span></div>';
-      }).join('');
-    buildScoreboard('p-sb-turnend', data);
+    if (lastPhase !== 'turn-end') {
+      showView('turn-end');
+      document.getElementById('p-summary-pts').textContent = '+' + data.correctCount + ' נקודות';
+      document.getElementById('p-summary-sub').textContent =
+        data.teams[data.currentTeam] + ' — ניחשו ' + data.correctCount +
+        (data.skipCount ? ', דילגו ' + data.skipCount : '');
+      document.getElementById('p-words-grid').innerHTML =
+        (data.roundCorrectWords || []).map(function(w) {
+          return '<div class="word-result-card correct"><span>' + w + '</span><span>✓</span></div>';
+        }).join('') +
+        (data.roundSkippedWords || []).map(function(w) {
+          return '<div class="word-result-card skip"><span>' + w + '</span><span>—</span></div>';
+        }).join('');
+      buildScoreboard('p-sb-turnend', data);
+    }
 
   } else if (data.phase === 'end') {
-    showView('end');
-    document.getElementById('p-end-winner').textContent = data.winner || '';
-    document.getElementById('p-end-winner-sub').textContent = data.winnerSub || '';
-    var maxScore = Math.max.apply(null, data.scores);
-    var sorted = data.teams.map(function(name, i) {
-      return { name: name, score: data.scores[i], members: data.teamMembers[i] };
-    }).sort(function(a, b) { return b.score - a.score; });
-    document.getElementById('p-final-scores').innerHTML = sorted.map(function(t) {
-      var iw = t.score === maxScore;
-      var mh = t.members && t.members.length ? '<div class="final-row-members">' + t.members.join(', ') + '</div>' : '';
-      return '<div class="final-row' + (iw ? ' winner' : '') + '"><div><div>' + (iw ? '🏆 ' : '') + t.name + '</div>' + mh + '</div><div>' + t.score + ' נקודות</div></div>';
-    }).join('');
+    if (lastPhase !== 'end') {
+      showView('end');
+      document.getElementById('p-end-winner').textContent = data.winner || '';
+      document.getElementById('p-end-winner-sub').textContent = data.winnerSub || '';
+      var maxScore = Math.max.apply(null, data.scores);
+      var sorted = data.teams.map(function(name, i) {
+        return { name: name, score: data.scores[i], members: data.teamMembers[i] };
+      }).sort(function(a, b) { return b.score - a.score; });
+      document.getElementById('p-final-scores').innerHTML = sorted.map(function(t) {
+        var iw = t.score === maxScore;
+        var mh = t.members && t.members.length ? '<div class="final-row-members">' + t.members.join(', ') + '</div>' : '';
+        return '<div class="final-row' + (iw ? ' winner' : '') + '"><div><div>' + (iw ? '🏆 ' : '') + t.name + '</div>' + mh + '</div><div>' + t.score + ' נקודות</div></div>';
+      }).join('');
+      clearInterval(pollInterval);
+    }
   }
+  lastPhase = data.phase;
 }
 
 var urlRoom = getUrlRoom();
-if (urlRoom.length === 5) {
-  connectToHost(urlRoom);
+if (urlRoom) {
+  startPolling(urlRoom);
 }
 </script>
 </body>

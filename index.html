@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>אליאס — מנחה</title>
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -45,17 +44,15 @@ textarea { height: 120px; resize: vertical; }
 .team-reveal-members { display: flex; flex-wrap: wrap; gap: 6px; }
 .team-member-chip { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 10px; font-size: 13px; font-weight: 700; }
 
-/* room bar - always visible once game starts */
-.room-bar { display: none; background: rgba(0,0,0,0.28); border-radius: 14px; padding: 14px 18px; margin-bottom: 14px; border: 2px dashed rgba(255,255,255,0.35); }
+/* room bar */
+.room-bar { display: none; background: rgba(0,0,0,0.28); border-radius: 16px; padding: 16px 18px; margin-bottom: 14px; border: 2px dashed rgba(255,255,255,0.35); }
 .room-bar.visible { display: block; }
-.room-bar-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
-.room-bar-label { font-size: 11px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 1px; }
-.room-bar-code { font-size: 36px; font-weight: 900; letter-spacing: 8px; }
-.room-bar-bottom { display: flex; align-items: center; gap: 10px; }
-.room-bar-link { font-size: 11px; color: rgba(255,255,255,0.4); flex: 1; word-break: break-all; }
-.copy-btn { padding: 8px 16px; background: #fff; color: #e31e24; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; white-space: nowrap; }
-.players-count { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 6px; }
-.players-count span { color: #2ecc71; font-weight: 700; }
+.room-bar-title { font-size: 11px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+.room-bar-inner { display: flex; gap: 16px; align-items: center; }
+.room-qr { width: 100px; height: 100px; border-radius: 10px; flex-shrink: 0; background: #fff; }
+.room-bar-right { flex: 1; }
+.room-bar-link { font-size: 11px; color: rgba(255,255,255,0.45); word-break: break-all; margin-bottom: 10px; line-height: 1.5; }
+.copy-btn { display: block; width: 100%; padding: 10px; background: #fff; color: #e31e24; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; text-align: center; }
 
 .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; text-align: center; margin-bottom: 10px; transition: transform 0.1s; }
 .btn:active { transform: scale(0.97); }
@@ -119,24 +116,19 @@ textarea { height: 120px; resize: vertical; }
 </head>
 <body>
 
-<!-- room bar: fixed at top, visible during game -->
 <div class="room-bar" id="room-bar">
-  <div class="room-bar-top">
-    <div>
-      <div class="room-bar-label">📺 קוד חדר לשחקנים</div>
-      <div class="room-bar-code" id="room-bar-code">——</div>
+  <div class="room-bar-title">📲 שתף עם השחקנים</div>
+  <div class="room-bar-inner">
+    <img class="room-qr" id="room-qr" src="" alt="QR" />
+    <div class="room-bar-right">
+      <div class="room-bar-link" id="room-bar-link"></div>
+      <button class="copy-btn" onclick="copyLink()" id="copy-btn">העתק קישור</button>
     </div>
-    <button class="copy-btn" onclick="copyLink()">העתק קישור</button>
   </div>
-  <div class="room-bar-bottom">
-    <div class="room-bar-link" id="room-bar-link"></div>
-  </div>
-  <div class="players-count" id="players-count">אין שחקנים מחוברים עדיין</div>
 </div>
 
 <div class="container">
 
-<!-- SETUP -->
 <div id="screen-setup" class="screen active">
   <div class="setup-logo"><h1>אליאס</h1><p>ממשק מנחה</p></div>
 
@@ -185,7 +177,6 @@ textarea { height: 120px; resize: vertical; }
   <button class="btn btn-white" id="start-btn" onclick="initGame()">▶ התחל משחק</button>
 </div>
 
-<!-- TURN START -->
 <div id="screen-turn-start" class="screen">
   <div class="turn-banner">
     <div class="turn-label">תור</div>
@@ -197,7 +188,6 @@ textarea { height: 120px; resize: vertical; }
   <button class="btn btn-white" onclick="startRound()">🚀 התחל סיבוב!</button>
 </div>
 
-<!-- PLAYING -->
 <div id="screen-playing" class="screen">
   <div class="timer-wrap"><div class="timer-num" id="timer-display">60</div></div>
   <div class="timer-bar-bg"><div class="timer-bar" id="timer-bar" style="width:100%"></div></div>
@@ -212,7 +202,6 @@ textarea { height: 120px; resize: vertical; }
   <div class="log-wrap" id="round-log"></div>
 </div>
 
-<!-- TURN END -->
 <div id="screen-turn-end" class="screen">
   <div class="summary-card">
     <div class="summary-pts" id="turn-pts">+0 נקודות</div>
@@ -223,7 +212,6 @@ textarea { height: 120px; resize: vertical; }
   <button class="btn btn-white" id="next-turn-btn" onclick="nextTurn()">תור הבא ▶</button>
 </div>
 
-<!-- END -->
 <div id="screen-end" class="screen">
   <div class="end-wrap">
     <div class="trophy">🏆</div>
@@ -234,15 +222,14 @@ textarea { height: 120px; resize: vertical; }
   <button class="btn btn-white" onclick="resetGame()">▶ משחק חדש</button>
 </div>
 
-</div><!-- /container -->
+</div>
 <script>
+var BLOB_API = 'https://jsonblob.com/api/jsonBlob';
 var selectedTeamCount = 3;
 var participants = [];
 var assignedTeamMembers = [];
-var peer = null;
-var playerConns = [];
-var roomCode = '';
-var lastState = null;
+var blobId = null;
+var playersUrl = '';
 
 var state = {
   words:[], used:[], scores:[], teams:[], teamMembers:[],
@@ -251,84 +238,47 @@ var state = {
   roundCorrect:[], roundSkipped:[], currentWord:null
 };
 
-function genCode() {
-  var c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  var s = '';
-  for (var i = 0; i < 5; i++) s += c[Math.floor(Math.random() * c.length)];
-  return s;
-}
-
 function initGame() {
   var raw = document.getElementById('words-input').value.trim();
   var words = raw.split('\n').map(function(w){ return w.trim(); }).filter(function(w){ return w.length > 0; });
   if (words.length < 5) { alert('נדרשות לפחות 5 מילים!'); return; }
 
   var btn = document.getElementById('start-btn');
-  btn.disabled = true;
-  btn.textContent = '🔄 מתחבר...';
+  btn.disabled = true; btn.textContent = '⏳ יוצר חדר משחק...';
 
-  roomCode = genCode();
-  var peerId = 'alias-game-' + roomCode;
-
-  var iceConfig = { iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:openrelay.metered.ca:80' },
-    { urls: 'turn:openrelay.metered.ca:80',               username: 'openrelayproject', credential: 'openrelayproject' },
-    { urls: 'turn:openrelay.metered.ca:443',              username: 'openrelayproject', credential: 'openrelayproject' },
-    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
-  ]};
-  peer = new Peer(peerId, { config: iceConfig });
-
-  peer.on('open', function() {
+  fetch(BLOB_API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({ phase: 'waiting' })
+  }).then(function(res) {
+    var loc = res.headers.get('Location') || '';
+    blobId = loc.split('/').pop();
+    if (!blobId) throw new Error('לא התקבל מזהה חדר');
+    playersUrl = 'https://eladperel.github.io/elias/players.html?room=' + blobId;
     showRoomBar();
-    btn.disabled = false;
-    btn.textContent = '▶ התחל משחק';
+    btn.disabled = false; btn.textContent = '▶ התחל משחק';
     startGame(words);
-  });
-
-  peer.on('error', function(err) {
-    if (err.type === 'unavailable-id') {
-      roomCode = genCode();
-      peer.destroy();
-      initGame();
-      return;
-    }
-    btn.disabled = false;
-    btn.textContent = '▶ התחל משחק';
-    alert('שגיאת חיבור: ' + err.message);
-  });
-
-  peer.on('connection', function(conn) {
-    conn.on('open', function() {
-      playerConns.push(conn);
-      updatePlayersCount();
-      if (lastState) conn.send(JSON.stringify(lastState));
-    });
-    conn.on('close', function() {
-      playerConns = playerConns.filter(function(c){ return c !== conn; });
-      updatePlayersCount();
-    });
-    conn.on('error', function() {
-      playerConns = playerConns.filter(function(c){ return c !== conn; });
-      updatePlayersCount();
-    });
+  }).catch(function(e) {
+    btn.disabled = false; btn.textContent = '▶ התחל משחק';
+    alert('שגיאה ביצירת חדר: ' + e.message);
   });
 }
 
 function showRoomBar() {
-  var url = 'https://eladperel.github.io/elias/players.html?room=' + roomCode;
-  document.getElementById('room-bar-code').textContent = roomCode;
-  document.getElementById('room-bar-link').textContent = url;
+  document.getElementById('room-bar-link').textContent = playersUrl;
+  document.getElementById('room-qr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=' + encodeURIComponent(playersUrl);
   document.getElementById('room-bar').classList.add('visible');
 }
 
-function updatePlayersCount() {
-  var n = playerConns.filter(function(c){ return c.open; }).length;
-  var el = document.getElementById('players-count');
-  el.innerHTML = n === 0 ? 'אין שחקנים מחוברים עדיין' : '<span>' + n + '</span> שחקנים מחוברים';
+function copyLink() {
+  navigator.clipboard.writeText(playersUrl).catch(function(){});
+  var btn = document.getElementById('copy-btn');
+  btn.textContent = '✓ הועתק!';
+  setTimeout(function(){ btn.textContent = 'העתק קישור'; }, 2000);
 }
 
 function broadcast(phase) {
+  if (!blobId) return;
   var pub = {
     phase: phase, teams: state.teams, teamMembers: state.teamMembers,
     scores: state.scores, currentTeam: state.currentTeam,
@@ -345,17 +295,11 @@ function broadcast(phase) {
     pub.winner = ws.length === 1 ? ws[0] + ' ניצחו!' : 'תיקו!';
     pub.winnerSub = mx + ' נקודות';
   }
-  lastState = pub;
-  var msg = JSON.stringify(pub);
-  playerConns.forEach(function(conn) { if (conn.open) conn.send(msg); });
-}
-
-function copyLink() {
-  var url = 'https://eladperel.github.io/elias/players.html?room=' + roomCode;
-  navigator.clipboard.writeText(url).catch(function(){});
-  var btn = document.querySelector('.copy-btn');
-  btn.textContent = '✓ הועתק!';
-  setTimeout(function(){ btn.textContent = 'העתק קישור'; }, 2000);
+  fetch(BLOB_API + '/' + blobId, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(pub)
+  });
 }
 
 /* ── setup helpers ── */
@@ -519,8 +463,7 @@ function showEndGame() {
   showScreen('end');
 }
 function resetGame() {
-  if (peer) { peer.destroy(); peer = null; }
-  playerConns = []; lastState = null;
+  blobId = null; playersUrl = '';
   participants = []; assignedTeamMembers = [];
   document.getElementById('participants-list').innerHTML = '';
   document.getElementById('teams-reveal').innerHTML = '';
