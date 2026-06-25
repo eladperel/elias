@@ -242,11 +242,11 @@ textarea { height: 120px; resize: vertical; }
   <div class="card">
     <div class="card-title">מספר קבוצות</div>
     <div class="tc-row">
-      <button class="tc-btn" onclick="setTC(2)">2</button>
-      <button class="tc-btn active" onclick="setTC(3)">3</button>
-      <button class="tc-btn" onclick="setTC(4)">4</button>
-      <button class="tc-btn" onclick="setTC(5)">5</button>
-      <button class="tc-btn" onclick="setTC(6)">6</button>
+      <button class="tc-btn team-count-btn" onclick="setTC(2)">2</button>
+      <button class="tc-btn team-count-btn active" onclick="setTC(3)">3</button>
+      <button class="tc-btn team-count-btn" onclick="setTC(4)">4</button>
+      <button class="tc-btn team-count-btn" onclick="setTC(5)">5</button>
+      <button class="tc-btn team-count-btn" onclick="setTC(6)">6</button>
     </div>
     <div class="card-title">שמות קבוצות</div>
     <div class="team-inputs" id="team-inputs"></div>
@@ -527,7 +527,7 @@ function broadcast(phase) {
 /* ══════════════ HOST SETUP HELPERS ══════════════ */
 function setTC(n) {
   selectedTC = n;
-  document.querySelectorAll('.tc-btn').forEach(function(b,i){ b.classList.toggle('active',(i+2)===n); });
+  document.querySelectorAll('.team-count-btn').forEach(function(b,i){ b.classList.toggle('active',(i+2)===n); });
   renderTI(n);
   if (participants.length > 0) shuffleP(); else document.getElementById('teams-reveal').innerHTML = '';
 }
