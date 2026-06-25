@@ -26,7 +26,7 @@ textarea { height: 120px; resize: vertical; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 .team-count-row { display: flex; gap: 8px; margin-bottom: 14px; }
-.tc-btn { flex: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 2px solid rgba(255,255,255,0.25); border-radius: 10px; color: rgba(255,255,255,0.7); font-size: 18px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; text-align: center; }
+.tc-btn { flex: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 2px solid rgba(255,255,255,0.25); border-radius: 10px; color: rgba(255,255,255,0.7); font-size: 18px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; }
 .tc-btn.active { background: #fff; border-color: #fff; color: #e31e24; }
 .team-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .team-input-wrap label { font-size: 12px; }
@@ -45,14 +45,14 @@ textarea { height: 120px; resize: vertical; }
 .team-member-chip { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 10px; font-size: 13px; font-weight: 700; }
 
 /* room bar */
-.room-bar { display: none; background: rgba(0,0,0,0.28); border-radius: 16px; padding: 16px 18px; margin-bottom: 14px; border: 2px dashed rgba(255,255,255,0.35); }
+.room-bar { display: none; background: rgba(0,0,0,0.28); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; border: 2px dashed rgba(255,255,255,0.4); }
 .room-bar.visible { display: block; }
-.room-bar-title { font-size: 11px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-.room-bar-inner { display: flex; gap: 16px; align-items: center; }
-.room-qr { width: 100px; height: 100px; border-radius: 10px; flex-shrink: 0; background: #fff; }
-.room-bar-right { flex: 1; }
-.room-bar-link { font-size: 11px; color: rgba(255,255,255,0.45); word-break: break-all; margin-bottom: 10px; line-height: 1.5; }
-.copy-btn { display: block; width: 100%; padding: 10px; background: #fff; color: #e31e24; border: none; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; text-align: center; }
+.room-bar-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.room-bar-left { }
+.room-bar-label { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
+.room-bar-code { font-size: 44px; font-weight: 900; letter-spacing: 10px; line-height: 1; }
+.room-qr { width: 90px; height: 90px; border-radius: 10px; background: #fff; flex-shrink: 0; }
+.copy-btn { display: block; width: 100%; padding: 11px; background: #fff; color: #e31e24; border: none; border-radius: 10px; font-size: 14px; font-weight: 900; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; text-align: center; }
 
 .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; text-align: center; margin-bottom: 10px; transition: transform 0.1s; }
 .btn:active { transform: scale(0.97); }
@@ -70,12 +70,12 @@ textarea { height: 120px; resize: vertical; }
 
 .turn-banner { text-align: center; padding: 24px 20px; background: rgba(0,0,0,0.18); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.2); }
 .turn-label { font-size: 13px; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.7); text-transform: uppercase; margin-bottom: 6px; }
-.turn-team  { font-size: 38px; font-weight: 900; color: #fff; }
+.turn-team  { font-size: 38px; font-weight: 900; }
 .turn-members { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 4px; }
 .turn-hint  { text-align: center; font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 16px; }
 
 .timer-wrap { text-align: center; margin-bottom: 8px; }
-.timer-num  { font-size: 108px; font-weight: 900; color: #fff; line-height: 1; }
+.timer-num  { font-size: 108px; font-weight: 900; line-height: 1; }
 .timer-num.low { animation: blink 0.5s infinite alternate; }
 @keyframes blink{from{opacity:1}to{opacity:0.5}}
 .timer-bar-bg { background: rgba(0,0,0,0.2); border-radius: 6px; height: 6px; margin-bottom: 16px; }
@@ -98,14 +98,14 @@ textarea { height: 120px; resize: vertical; }
 .log-item.skip    .log-tag { background: rgba(0,0,0,0.3); color: rgba(255,255,255,0.8); }
 
 .summary-card { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 20px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); }
-.summary-pts { font-size: 48px; font-weight: 900; color: #fff; }
+.summary-pts { font-size: 48px; font-weight: 900; }
 .summary-sub { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 14px; margin-top: 2px; }
 .summary-list { max-height: 180px; overflow-y: auto; }
-.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.12); font-size: 14px; color: rgba(255,255,255,0.9); }
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.12); font-size: 14px; }
 
 .end-wrap { text-align: center; padding: 30px 0 20px; }
 .trophy { font-size: 80px; margin-bottom: 12px; }
-.winner-name { font-size: 40px; font-weight: 900; color: #fff; }
+.winner-name { font-size: 40px; font-weight: 900; }
 .winner-sub  { font-size: 15px; color: rgba(255,255,255,0.7); margin-top: 6px; margin-bottom: 24px; }
 .end-scores { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); }
 .end-score-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 16px; }
@@ -117,14 +117,14 @@ textarea { height: 120px; resize: vertical; }
 <body>
 
 <div class="room-bar" id="room-bar">
-  <div class="room-bar-title">📲 שתף עם השחקנים</div>
-  <div class="room-bar-inner">
-    <img class="room-qr" id="room-qr" src="" alt="QR" />
-    <div class="room-bar-right">
-      <div class="room-bar-link" id="room-bar-link"></div>
-      <button class="copy-btn" onclick="copyLink()" id="copy-btn">העתק קישור</button>
+  <div class="room-bar-top">
+    <div class="room-bar-left">
+      <div class="room-bar-label">קוד לשחקנים</div>
+      <div class="room-bar-code" id="room-bar-code">——</div>
     </div>
+    <img class="room-qr" id="room-qr" src="" alt="QR" />
   </div>
+  <button class="copy-btn" onclick="copyLink()" id="copy-btn">📋 העתק קישור לשחקנים</button>
 </div>
 
 <div class="container">
@@ -224,11 +224,11 @@ textarea { height: 120px; resize: vertical; }
 
 </div>
 <script>
-var BLOB_API = 'https://jsonblob.com/api/jsonBlob';
+var STORE = 'https://www.jsonstore.io/';
 var selectedTeamCount = 3;
 var participants = [];
 var assignedTeamMembers = [];
-var blobId = null;
+var roomCode = '';
 var playersUrl = '';
 
 var state = {
@@ -238,35 +238,43 @@ var state = {
   roundCorrect:[], roundSkipped:[], currentWord:null
 };
 
+function genCode() {
+  var c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var s = '';
+  for (var i = 0; i < 6; i++) s += c[Math.floor(Math.random() * c.length)];
+  return s;
+}
+
 function initGame() {
   var raw = document.getElementById('words-input').value.trim();
   var words = raw.split('\n').map(function(w){ return w.trim(); }).filter(function(w){ return w.length > 0; });
   if (words.length < 5) { alert('נדרשות לפחות 5 מילים!'); return; }
 
   var btn = document.getElementById('start-btn');
-  btn.disabled = true; btn.textContent = '⏳ יוצר חדר משחק...';
+  btn.disabled = true; btn.textContent = '⏳ יוצר חדר...';
 
-  fetch(BLOB_API, {
+  roomCode = genCode();
+  playersUrl = 'https://eladperel.github.io/elias/players.html?room=' + roomCode;
+
+  // Write initial state to verify connectivity
+  fetch(STORE + roomCode, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ phase: 'waiting' })
-  }).then(function(res) {
-    var loc = res.headers.get('Location') || '';
-    blobId = loc.split('/').pop();
-    if (!blobId) throw new Error('לא התקבל מזהה חדר');
-    playersUrl = 'https://eladperel.github.io/elias/players.html?room=' + blobId;
-    showRoomBar();
+  }).then(function() {
     btn.disabled = false; btn.textContent = '▶ התחל משחק';
+    showRoomBar();
     startGame(words);
   }).catch(function(e) {
     btn.disabled = false; btn.textContent = '▶ התחל משחק';
-    alert('שגיאה ביצירת חדר: ' + e.message);
+    alert('שגיאת חיבור לאינטרנט: ' + e.message);
   });
 }
 
 function showRoomBar() {
-  document.getElementById('room-bar-link').textContent = playersUrl;
-  document.getElementById('room-qr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=' + encodeURIComponent(playersUrl);
+  document.getElementById('room-bar-code').textContent = roomCode;
+  var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=' + encodeURIComponent(playersUrl);
+  document.getElementById('room-qr').src = qrUrl;
   document.getElementById('room-bar').classList.add('visible');
 }
 
@@ -274,30 +282,32 @@ function copyLink() {
   navigator.clipboard.writeText(playersUrl).catch(function(){});
   var btn = document.getElementById('copy-btn');
   btn.textContent = '✓ הועתק!';
-  setTimeout(function(){ btn.textContent = 'העתק קישור'; }, 2000);
+  setTimeout(function(){ btn.textContent = '📋 העתק קישור לשחקנים'; }, 2000);
 }
 
 function broadcast(phase) {
-  if (!blobId) return;
+  if (!roomCode) return;
   var pub = {
-    phase: phase, teams: state.teams, teamMembers: state.teamMembers,
+    phase: phase,
+    teams: state.teams, teamMembers: state.teamMembers,
     scores: state.scores, currentTeam: state.currentTeam,
     timeLeft: state.timeLeft, totalTime: state.totalTime,
-    correctCount: state.roundCorrect.length, skipCount: state.roundSkipped.length,
+    correctCount: state.roundCorrect.length,
+    skipCount: state.roundSkipped.length,
     wordsLeft: state.words.filter(function(w){ return state.used.indexOf(w) === -1; }).length,
-    roundCorrectWords: phase === 'turn-end' ? state.roundCorrect : [],
-    roundSkippedWords: phase === 'turn-end' ? state.roundSkipped : [],
+    roundCorrectWords:  phase === 'turn-end' ? state.roundCorrect.slice()  : [],
+    roundSkippedWords:  phase === 'turn-end' ? state.roundSkipped.slice()  : [],
     winner: null, winnerSub: null
   };
   if (phase === 'end') {
     var mx = Math.max.apply(null, state.scores);
-    var ws = state.teams.filter(function(t, i){ return state.scores[i] === mx; });
+    var ws = state.teams.filter(function(t,i){ return state.scores[i] === mx; });
     pub.winner = ws.length === 1 ? ws[0] + ' ניצחו!' : 'תיקו!';
     pub.winnerSub = mx + ' נקודות';
   }
-  fetch(BLOB_API + '/' + blobId, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+  fetch(STORE + roomCode, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(pub)
   });
 }
@@ -387,8 +397,8 @@ function startGame(words) {
     state.teamMembers.push(assignedTeamMembers[i] ? assignedTeamMembers[i].slice() : []);
   }
   state.scores = state.teams.map(function(){ return 0; });
-  state.roundTime = parseInt(document.getElementById('round-time').value) || 60;
-  state.totalTime = state.roundTime;
+  state.roundTime  = parseInt(document.getElementById('round-time').value) || 60;
+  state.totalTime  = state.roundTime;
   state.skipPenalty = parseInt(document.getElementById('skip-penalty').value);
   state.currentTeam = 0;
   showTurnStart();
@@ -397,7 +407,8 @@ function startGame(words) {
 function showTurnStart() {
   var t = state.currentTeam;
   document.getElementById('turn-team-name').textContent = state.teams[t];
-  var m = state.teamMembers[t]; document.getElementById('turn-members').textContent = m && m.length ? m.join(' · ') : '';
+  var m = state.teamMembers[t];
+  document.getElementById('turn-members').textContent = m && m.length ? m.join(' · ') : '';
   renderScoreboard('sb-turnstart', t);
   broadcast('turn-start');
   showScreen('turn-start');
@@ -463,7 +474,7 @@ function showEndGame() {
   showScreen('end');
 }
 function resetGame() {
-  blobId = null; playersUrl = '';
+  roomCode = ''; playersUrl = '';
   participants = []; assignedTeamMembers = [];
   document.getElementById('participants-list').innerHTML = '';
   document.getElementById('teams-reveal').innerHTML = '';

@@ -10,19 +10,22 @@
 body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 16px; }
 .container { width: 100%; max-width: 560px; }
 
-.splash { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85vh; text-align: center; }
-.splash-logo { font-size: 80px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); margin-bottom: 28px; }
-.splash-card { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 340px; border: 1px solid rgba(255,255,255,0.2); }
-.splash-msg { font-size: 18px; color: rgba(255,255,255,0.8); line-height: 1.6; }
-.splash-sub { font-size: 14px; color: rgba(255,255,255,0.5); margin-top: 12px; }
+.join-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85vh; text-align: center; }
+.join-logo { font-size: 80px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); margin-bottom: 28px; }
+.join-card { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 340px; border: 1px solid rgba(255,255,255,0.2); }
+.join-label { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 10px; }
+.join-input { width: 100%; padding: 14px; background: rgba(0,0,0,0.25); border: 2px solid rgba(255,255,255,0.4); border-radius: 12px; color: #fff; font-size: 32px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; text-align: center; letter-spacing: 8px; text-transform: uppercase; margin-bottom: 14px; }
+.join-input::placeholder { color: rgba(255,255,255,0.3); font-size: 20px; letter-spacing: 2px; }
+.join-btn { width: 100%; padding: 14px; background: #fff; color: #e31e24; border: none; border-radius: 12px; font-size: 18px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; }
+.join-error { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 10px; min-height: 20px; }
 
 .waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; text-align: center; }
 .waiting-logo { font-size: 72px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); margin-bottom: 16px; }
 .waiting-sub { font-size: 18px; color: rgba(255,255,255,0.7); }
 .dot-pulse { display: flex; gap: 8px; justify-content: center; margin-top: 24px; }
 .dot { width: 10px; height: 10px; background: rgba(255,255,255,0.6); border-radius: 50%; animation: db 1.2s infinite ease-in-out; }
-.dot:nth-child(2){ animation-delay: 0.2s } .dot:nth-child(3){ animation-delay: 0.4s }
-@keyframes db { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+.dot:nth-child(2){ animation-delay:0.2s } .dot:nth-child(3){ animation-delay:0.4s }
+@keyframes db{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
 
 .game-view { display: none; }
 .game-view.active { display: block; }
@@ -49,7 +52,7 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 
 .timer-big { font-size: 110px; font-weight: 900; line-height: 1; text-align: center; margin-bottom: 8px; }
 .timer-big.low { animation: blink 0.5s infinite alternate; }
-@keyframes blink { from{opacity:1} to{opacity:0.45} }
+@keyframes blink{from{opacity:1}to{opacity:0.45}}
 .timer-bar-bg { background: rgba(0,0,0,0.2); border-radius: 6px; height: 8px; margin-bottom: 16px; }
 .timer-bar    { height: 8px; border-radius: 6px; background: rgba(255,255,255,0.8); transition: width 1.5s linear; }
 .timer-bar.low { background: rgba(255,255,255,0.4); }
@@ -88,17 +91,21 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 <body>
 <div class="container">
 
-  <div id="splash" class="splash">
-    <div class="splash-logo">אליאס</div>
-    <div class="splash-card">
-      <div class="splash-msg">📲 פתח את הקישור שהמנחה שלח לך</div>
-      <div class="splash-sub">אם קיבלת קישור — לחץ עליו כדי להצטרף למשחק</div>
+  <div id="join-screen" class="join-screen">
+    <div class="join-logo">אליאס</div>
+    <div class="join-card">
+      <div class="join-label">הזן קוד חדר</div>
+      <input class="join-input" id="code-input" maxlength="6" placeholder="XXXXXX"
+             oninput="this.value=this.value.toUpperCase()"
+             onkeydown="if(event.key==='Enter') joinGame()" />
+      <button class="join-btn" onclick="joinGame()">הצטרף למשחק</button>
+      <div class="join-error" id="join-error"></div>
     </div>
   </div>
 
   <div id="waiting-screen" class="waiting" style="display:none">
     <div class="waiting-logo">אליאס</div>
-    <div class="waiting-sub" id="waiting-text">מתחבר למשחק...</div>
+    <div class="waiting-sub" id="waiting-text">מחפש את המשחק...</div>
     <div class="dot-pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
   </div>
 
@@ -150,18 +157,25 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 
 </div>
 <script>
-var BLOB_API = 'https://jsonblob.com/api/jsonBlob';
-var blobId = null;
+var STORE = 'https://www.jsonstore.io/';
+var roomCode = '';
 var pollInterval = null;
 var lastPhase = null;
 
 function getUrlRoom() {
   var params = new URLSearchParams(window.location.search);
-  return params.get('room') || '';
+  return (params.get('room') || '').toUpperCase();
+}
+
+function joinGame() {
+  var code = (document.getElementById('code-input').value || '').trim().toUpperCase();
+  if (code.length < 4) { document.getElementById('join-error').textContent = 'הזן קוד חדר תקין'; return; }
+  document.getElementById('join-error').textContent = '';
+  startPolling(code);
 }
 
 function hideAll() {
-  document.getElementById('splash').style.display = 'none';
+  document.getElementById('join-screen').style.display = 'none';
   document.getElementById('waiting-screen').style.display = 'none';
   document.querySelectorAll('.game-view').forEach(function(v){ v.classList.remove('active'); });
 }
@@ -172,23 +186,21 @@ function showView(id) {
   if (el) el.classList.add('active');
 }
 
-function startPolling(id) {
-  blobId = id;
+function startPolling(code) {
+  roomCode = code;
   hideAll();
   document.getElementById('waiting-screen').style.display = '';
   document.getElementById('waiting-text').textContent = 'ממתין למנחה...';
-
+  if (pollInterval) clearInterval(pollInterval);
   pollInterval = setInterval(poll, 1500);
   poll();
 }
 
 function poll() {
-  fetch(BLOB_API + '/' + blobId, { headers: { 'Accept': 'application/json' } })
-    .then(function(r) {
-      if (!r.ok) throw new Error('not found');
-      return r.json();
-    })
-    .then(function(data) {
+  fetch(STORE + roomCode, { headers: { 'Accept': 'application/json' } })
+    .then(function(r) { return r.json(); })
+    .then(function(wrapper) {
+      var data = wrapper && wrapper.result ? wrapper.result : wrapper;
       if (data && data.phase && data.phase !== 'waiting') {
         render(data);
       }
@@ -214,13 +226,11 @@ function buildScoreboard(cid, data) {
 
 function render(data) {
   if (data.phase === 'turn-start') {
-    if (lastPhase !== 'turn-start' || document.getElementById('p-turn-team').textContent !== data.teams[data.currentTeam]) {
-      showView('turn-start');
-      document.getElementById('p-turn-team').textContent = data.teams[data.currentTeam];
-      var m = data.teamMembers[data.currentTeam];
-      document.getElementById('p-turn-members').textContent = m && m.length ? m.join(' · ') : '';
-      buildScoreboard('p-sb-turnstart', data);
-    }
+    showView('turn-start');
+    document.getElementById('p-turn-team').textContent = data.teams[data.currentTeam];
+    var m = data.teamMembers[data.currentTeam];
+    document.getElementById('p-turn-members').textContent = m && m.length ? m.join(' · ') : '';
+    buildScoreboard('p-sb-turnstart', data);
 
   } else if (data.phase === 'playing') {
     if (lastPhase !== 'playing') showView('playing');
@@ -246,10 +256,10 @@ function render(data) {
         data.teams[data.currentTeam] + ' — ניחשו ' + data.correctCount +
         (data.skipCount ? ', דילגו ' + data.skipCount : '');
       document.getElementById('p-words-grid').innerHTML =
-        (data.roundCorrectWords || []).map(function(w) {
+        (data.roundCorrectWords || []).map(function(w){
           return '<div class="word-result-card correct"><span>' + w + '</span><span>✓</span></div>';
         }).join('') +
-        (data.roundSkippedWords || []).map(function(w) {
+        (data.roundSkippedWords || []).map(function(w){
           return '<div class="word-result-card skip"><span>' + w + '</span><span>—</span></div>';
         }).join('');
       buildScoreboard('p-sb-turnend', data);
@@ -261,10 +271,10 @@ function render(data) {
       document.getElementById('p-end-winner').textContent = data.winner || '';
       document.getElementById('p-end-winner-sub').textContent = data.winnerSub || '';
       var maxScore = Math.max.apply(null, data.scores);
-      var sorted = data.teams.map(function(name, i) {
+      var sorted = data.teams.map(function(name, i){
         return { name: name, score: data.scores[i], members: data.teamMembers[i] };
-      }).sort(function(a, b) { return b.score - a.score; });
-      document.getElementById('p-final-scores').innerHTML = sorted.map(function(t) {
+      }).sort(function(a, b){ return b.score - a.score; });
+      document.getElementById('p-final-scores').innerHTML = sorted.map(function(t){
         var iw = t.score === maxScore;
         var mh = t.members && t.members.length ? '<div class="final-row-members">' + t.members.join(', ') + '</div>' : '';
         return '<div class="final-row' + (iw ? ' winner' : '') + '"><div><div>' + (iw ? '🏆 ' : '') + t.name + '</div>' + mh + '</div><div>' + t.score + ' נקודות</div></div>';
@@ -276,7 +286,7 @@ function render(data) {
 }
 
 var urlRoom = getUrlRoom();
-if (urlRoom) {
+if (urlRoom.length >= 4) {
   startPolling(urlRoom);
 }
 </script>
