@@ -145,6 +145,12 @@ textarea { height: 120px; resize: vertical; }
 .topbar-phase { font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 700; text-transform: uppercase; }
 
 .p-scoreboard { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.big-scoreboard { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.big-scoreboard .p-sc-card { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; min-width: unset; flex: unset; }
+.big-scoreboard .p-sc-val { font-size: 52px; }
+.big-scoreboard .p-sc-name { font-size: 16px; text-align: right; }
+.big-scoreboard .p-sc-mem  { font-size: 12px; text-align: right; }
+.rank-badge { font-size: 22px; margin-left: 10px; flex-shrink: 0; }
 .p-sc-card { flex: 1; min-width: 85px; background: rgba(0,0,0,0.18); border-radius: 13px; padding: 10px; text-align: center; border: 2px solid transparent; }
 .p-sc-card.at { border-color: #ffe066; background: rgba(255,224,102,0.12); }
 .p-sc-name { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 2px; }
@@ -374,7 +380,8 @@ textarea { height: 120px; resize: vertical; }
     <div style="font-size:14px;color:rgba(255,255,255,0.7);margin-top:4px" id="p-sum-sub"></div>
   </div>
   <div class="words-grid" id="p-words-grid"></div>
-  <div class="p-scoreboard" id="p-sb-te"></div>
+  <div style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;text-align:center">🏆 לוח הניקוד</div>
+  <div class="big-scoreboard" id="p-sb-te"></div>
 </div>
 
 <!-- PLAYER — END -->
@@ -737,13 +744,27 @@ function playerPoll() {
 
 function buildPSB(cid, data) {
   var el=document.getElementById(cid); if(!el)return; el.innerHTML='';
-  for (var i=0;i<data.teams.length;i++){
+  var isBig = el.classList.contains('big-scoreboard');
+  var items = data.teams.map(function(name,i){
+    return { name:name, score:data.scores[i], members:data.teamMembers[i], isActive:i===data.currentTeam };
+  });
+  if (isBig) items = items.slice().sort(function(a,b){ return b.score-a.score; });
+  var medals = ['🥇','🥈','🥉'];
+  items.forEach(function(t, rank){
     var card=document.createElement('div');
-    card.className='p-sc-card'+(i===data.currentTeam?' at':'');
-    var mh=data.teamMembers[i]&&data.teamMembers[i].length?'<div class="p-sc-mem">'+data.teamMembers[i].join(', ')+'</div>':'<div class="p-sc-mem"></div>';
-    card.innerHTML='<div class="p-sc-name">'+data.teams[i]+'</div>'+mh+'<div class="p-sc-val">'+data.scores[i]+'</div>';
+    card.className='p-sc-card'+(t.isActive?' at':'');
+    var mh=t.members&&t.members.length?'<div class="p-sc-mem">'+t.members.join(', ')+'</div>':'';
+    if (isBig) {
+      var badge = medals[rank] || (rank+1)+'.';
+      card.innerHTML='<div><div class="p-sc-name">'+t.name+'</div>'+mh+'</div>'
+        +'<div style="display:flex;align-items:center;gap:10px">'
+        +'<div class="p-sc-val">'+t.score+'</div>'
+        +'<div class="rank-badge">'+badge+'</div></div>';
+    } else {
+      card.innerHTML='<div class="p-sc-name">'+t.name+'</div>'+mh+'<div class="p-sc-val">'+t.score+'</div>';
+    }
     el.appendChild(card);
-  }
+  });
 }
 
 function playerRender(data) {
