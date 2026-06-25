@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>אליאס — מנחה</title>
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -41,28 +41,21 @@ textarea { height: 120px; resize: vertical; }
 .shuffle-btn { width: 100%; padding: 10px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; }
 .teams-reveal { margin-top: 12px; }
 .team-reveal-row { background: rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; }
-.team-reveal-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.team-reveal-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 4px; text-transform: uppercase; }
 .team-reveal-members { display: flex; flex-wrap: wrap; gap: 6px; }
 .team-member-chip { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 10px; font-size: 13px; font-weight: 700; }
 
-/* share link card */
-.share-card { background: rgba(0,0,0,0.25); border: 2px dashed rgba(255,255,255,0.4); border-radius: 14px; padding: 16px 18px; margin-bottom: 14px; }
-.share-card-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
-.share-row { display: flex; align-items: center; gap: 10px; }
-.room-code { font-size: 28px; font-weight: 900; letter-spacing: 4px; flex: 1; }
-.copy-btn { padding: 8px 14px; background: #fff; color: #e31e24; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; white-space: nowrap; }
-.share-link-text { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 6px; word-break: break-all; }
-.conn-status { font-size: 11px; margin-top: 6px; }
-.conn-status.ok  { color: #2ecc71; }
-.conn-status.err { color: #ff6b6b; }
-.conn-status.wait { color: rgba(255,255,255,0.5); }
-
-/* persistent room code bar */
-.room-bar { background: rgba(0,0,0,0.25); border-radius: 12px; padding: 10px 16px; margin-bottom: 14px; display: none; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid rgba(255,255,255,0.2); }
-.room-bar.visible { display: flex; }
-.room-bar-code { font-size: 22px; font-weight: 900; letter-spacing: 5px; }
-.room-bar-label { font-size: 11px; color: rgba(255,255,255,0.5); }
-.room-bar-right { display: flex; align-items: center; gap: 8px; }
+/* room bar - always visible once game starts */
+.room-bar { display: none; background: rgba(0,0,0,0.28); border-radius: 14px; padding: 14px 18px; margin-bottom: 14px; border: 2px dashed rgba(255,255,255,0.35); }
+.room-bar.visible { display: block; }
+.room-bar-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.room-bar-label { font-size: 11px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 1px; }
+.room-bar-code { font-size: 36px; font-weight: 900; letter-spacing: 8px; }
+.room-bar-bottom { display: flex; align-items: center; gap: 10px; }
+.room-bar-link { font-size: 11px; color: rgba(255,255,255,0.4); flex: 1; word-break: break-all; }
+.copy-btn { padding: 8px 16px; background: #fff; color: #e31e24; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; white-space: nowrap; }
+.players-count { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 6px; }
+.players-count span { color: #2ecc71; font-weight: 700; }
 
 .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; text-align: center; margin-bottom: 10px; transition: transform 0.1s; }
 .btn:active { transform: scale(0.97); }
@@ -87,7 +80,7 @@ textarea { height: 120px; resize: vertical; }
 .timer-wrap { text-align: center; margin-bottom: 8px; }
 .timer-num  { font-size: 108px; font-weight: 900; color: #fff; line-height: 1; }
 .timer-num.low { animation: blink 0.5s infinite alternate; }
-@keyframes blink { from{opacity:1}to{opacity:0.5} }
+@keyframes blink{from{opacity:1}to{opacity:0.5}}
 .timer-bar-bg { background: rgba(0,0,0,0.2); border-radius: 6px; height: 6px; margin-bottom: 16px; }
 .timer-bar    { height: 6px; border-radius: 6px; background: #fff; transition: width 0.9s linear; }
 .timer-bar.low { background: rgba(255,255,255,0.5); }
@@ -125,14 +118,20 @@ textarea { height: 120px; resize: vertical; }
 </style>
 </head>
 <body>
+
+<!-- room bar: fixed at top, visible during game -->
 <div class="room-bar" id="room-bar">
-  <div>
-    <div class="room-bar-label">קוד חדר לשחקנים</div>
-    <div class="room-bar-code" id="room-bar-code">——</div>
-  </div>
-  <div class="room-bar-right">
+  <div class="room-bar-top">
+    <div>
+      <div class="room-bar-label">📺 קוד חדר לשחקנים</div>
+      <div class="room-bar-code" id="room-bar-code">——</div>
+    </div>
     <button class="copy-btn" onclick="copyLink()">העתק קישור</button>
   </div>
+  <div class="room-bar-bottom">
+    <div class="room-bar-link" id="room-bar-link"></div>
+  </div>
+  <div class="players-count" id="players-count">אין שחקנים מחוברים עדיין</div>
 </div>
 
 <div class="container">
@@ -181,17 +180,6 @@ textarea { height: 120px; resize: vertical; }
         </select>
       </div>
     </div>
-  </div>
-
-  <!-- share card (shown after connect) -->
-  <div class="share-card" id="share-card" style="display:none">
-    <div class="share-card-title">📺 קישור לשחקנים</div>
-    <div class="share-row">
-      <div class="room-code" id="room-code-display">——</div>
-      <button class="copy-btn" onclick="copyLink()">העתק קישור</button>
-    </div>
-    <div class="share-link-text" id="share-link-text"></div>
-    <div class="conn-status wait" id="conn-status">מתחבר...</div>
   </div>
 
   <button class="btn btn-white" id="start-btn" onclick="initGame()">▶ התחל משחק</button>
@@ -246,15 +234,15 @@ textarea { height: 120px; resize: vertical; }
   <button class="btn btn-white" onclick="resetGame()">▶ משחק חדש</button>
 </div>
 
-</div>
+</div><!-- /container -->
 <script>
-var BROKER = 'wss://broker.emqx.io:8084/mqtt';
 var selectedTeamCount = 3;
 var participants = [];
 var assignedTeamMembers = [];
-var mqttClient = null;
+var peer = null;
+var playerConns = [];
 var roomCode = '';
-var mqttReady = false;
+var lastState = null;
 
 var state = {
   words:[], used:[], scores:[], teams:[], teamMembers:[],
@@ -264,85 +252,185 @@ var state = {
 };
 
 function genCode() {
-  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  var code = '';
-  for (var i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
-  return code;
+  var c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var s = '';
+  for (var i = 0; i < 5; i++) s += c[Math.floor(Math.random() * c.length)];
+  return s;
 }
 
-function connectMQTT(onReady) {
+function initGame() {
+  var raw = document.getElementById('words-input').value.trim();
+  var words = raw.split('\n').map(function(w){ return w.trim(); }).filter(function(w){ return w.length > 0; });
+  if (words.length < 5) { alert('נדרשות לפחות 5 מילים!'); return; }
+
+  var btn = document.getElementById('start-btn');
+  btn.disabled = true;
+  btn.textContent = '🔄 מתחבר...';
+
   roomCode = genCode();
-  var cid = 'alias_host_' + Math.random().toString(16).substr(2, 8);
-  mqttClient = mqtt.connect(BROKER, { clientId: cid, clean: true });
-  setConnStatus('wait', 'מתחבר לשרת...');
-  mqttClient.on('connect', function() {
-    mqttReady = true;
-    setConnStatus('ok', '✓ מחובר — שחקנים יכולים להצטרף');
-    document.getElementById('room-bar-code').textContent = roomCode;
-    document.getElementById('room-bar').classList.add('visible');
-    if (onReady) onReady();
+  var peerId = 'alias-game-' + roomCode;
+
+  peer = new Peer(peerId);
+
+  peer.on('open', function() {
+    showRoomBar();
+    btn.disabled = false;
+    btn.textContent = '▶ התחל משחק';
+    startGame(words);
   });
-  mqttClient.on('error', function() { setConnStatus('err', '✗ שגיאת חיבור — נסה שוב'); });
-  mqttClient.on('offline', function() { setConnStatus('err', '✗ אין חיבור'); });
+
+  peer.on('error', function(err) {
+    if (err.type === 'unavailable-id') {
+      roomCode = genCode();
+      peer.destroy();
+      initGame();
+      return;
+    }
+    btn.disabled = false;
+    btn.textContent = '▶ התחל משחק';
+    alert('שגיאת חיבור: ' + err.message);
+  });
+
+  peer.on('connection', function(conn) {
+    conn.on('open', function() {
+      playerConns.push(conn);
+      updatePlayersCount();
+      if (lastState) conn.send(JSON.stringify(lastState));
+    });
+    conn.on('close', function() {
+      playerConns = playerConns.filter(function(c){ return c !== conn; });
+      updatePlayersCount();
+    });
+    conn.on('error', function() {
+      playerConns = playerConns.filter(function(c){ return c !== conn; });
+      updatePlayersCount();
+    });
+  });
 }
 
-function setConnStatus(cls, msg) {
-  var el = document.getElementById('conn-status');
-  el.className = 'conn-status ' + cls;
-  el.textContent = msg;
+function showRoomBar() {
+  var url = 'https://eladperel.github.io/elias/players.html?room=' + roomCode;
+  document.getElementById('room-bar-code').textContent = roomCode;
+  document.getElementById('room-bar-link').textContent = url;
+  document.getElementById('room-bar').classList.add('visible');
 }
 
-function publish(phase) {
-  if (!mqttClient || !mqttReady) return;
+function updatePlayersCount() {
+  var n = playerConns.filter(function(c){ return c.open; }).length;
+  var el = document.getElementById('players-count');
+  el.innerHTML = n === 0 ? 'אין שחקנים מחוברים עדיין' : '<span>' + n + '</span> שחקנים מחוברים';
+}
+
+function broadcast(phase) {
   var pub = {
     phase: phase, teams: state.teams, teamMembers: state.teamMembers,
     scores: state.scores, currentTeam: state.currentTeam,
     timeLeft: state.timeLeft, totalTime: state.totalTime,
     correctCount: state.roundCorrect.length, skipCount: state.roundSkipped.length,
-    wordsLeft: state.words.filter(function(w){ return state.used.indexOf(w)===-1; }).length,
+    wordsLeft: state.words.filter(function(w){ return state.used.indexOf(w) === -1; }).length,
     roundCorrectWords: phase === 'turn-end' ? state.roundCorrect : [],
     roundSkippedWords: phase === 'turn-end' ? state.roundSkipped : [],
     winner: null, winnerSub: null
   };
   if (phase === 'end') {
     var mx = Math.max.apply(null, state.scores);
-    var ws = state.teams.filter(function(t,i){ return state.scores[i]===mx; });
-    pub.winner = ws.length===1 ? ws[0]+' ניצחו!' : 'תיקו!';
+    var ws = state.teams.filter(function(t, i){ return state.scores[i] === mx; });
+    pub.winner = ws.length === 1 ? ws[0] + ' ניצחו!' : 'תיקו!';
     pub.winnerSub = mx + ' נקודות';
   }
-  mqttClient.publish('alias/game/' + roomCode, JSON.stringify(pub), { retain: true, qos: 1 });
+  lastState = pub;
+  var msg = JSON.stringify(pub);
+  playerConns.forEach(function(conn) { if (conn.open) conn.send(msg); });
 }
 
 function copyLink() {
   var url = 'https://eladperel.github.io/elias/players.html?room=' + roomCode;
   navigator.clipboard.writeText(url).catch(function(){});
   var btn = document.querySelector('.copy-btn');
-  btn.textContent = 'הועתק!';
+  btn.textContent = '✓ הועתק!';
   setTimeout(function(){ btn.textContent = 'העתק קישור'; }, 2000);
 }
 
-function initGame() {
-  var raw = document.getElementById('words-input').value.trim();
-  var words = raw.split('\n').map(function(w){ return w.trim(); }).filter(function(w){ return w.length>0; });
-  if (words.length < 5) { alert('נדרשות לפחות 5 מילים!'); return; }
-
-  document.getElementById('start-btn').disabled = true;
-  document.getElementById('start-btn').textContent = 'מתחבר...';
-  document.getElementById('share-card').style.display = 'block';
-
-  connectMQTT(function() {
-    document.getElementById('start-btn').disabled = false;
-    document.getElementById('start-btn').textContent = '▶ התחל משחק';
-    document.getElementById('room-code-display').textContent = roomCode;
-    var url = 'https://eladperel.github.io/elias/players.html?room=' + roomCode;
-    document.getElementById('share-link-text').textContent = url;
-    startGame(words);
-  });
+/* ── setup helpers ── */
+function setTeamCount(n) {
+  selectedTeamCount = n;
+  document.querySelectorAll('.tc-btn').forEach(function(b,i){ b.classList.toggle('active',(i+2)===n); });
+  renderTeamInputs(n);
+  if (participants.length > 0) shuffleParticipants(); else document.getElementById('teams-reveal').innerHTML = '';
 }
+function renderTeamInputs(n) {
+  var c = document.getElementById('team-inputs'), ex = [];
+  c.querySelectorAll('input').forEach(function(inp){ ex.push(inp.value); });
+  c.innerHTML = '';
+  for (var i = 0; i < n; i++) {
+    var w = document.createElement('div'); w.className = 'team-input-wrap';
+    var l = document.createElement('label'); l.textContent = 'קבוצה ' + (i+1);
+    var inp = document.createElement('input'); inp.type = 'text'; inp.id = 'team-name-' + i;
+    inp.value = ex[i] || ('קבוצה ' + (i+1));
+    inp.onchange = function(){ if (participants.length > 0) renderTeamsReveal(); };
+    w.appendChild(l); w.appendChild(inp); c.appendChild(w);
+  }
+}
+function handlePaste(e) {
+  var text = (e.clipboardData || window.clipboardData).getData('text');
+  var names = text.split(/[\n,،;]+/).map(function(n){ return n.trim(); }).filter(function(n){ return n.length > 0; });
+  if (names.length <= 1) return;
+  e.preventDefault();
+  names.forEach(function(name){ if (participants.indexOf(name) === -1) participants.push(name); });
+  document.getElementById('participant-input').value = '';
+  renderParticipants();
+}
+function addParticipant() {
+  var inp = document.getElementById('participant-input'), name = inp.value.trim();
+  if (!name) return;
+  participants.push(name); inp.value = ''; inp.focus(); renderParticipants();
+}
+function removeParticipant(i) {
+  participants.splice(i, 1); renderParticipants();
+  if (participants.length > 0) shuffleParticipants(); else document.getElementById('teams-reveal').innerHTML = '';
+}
+function renderParticipants() {
+  var list = document.getElementById('participants-list'); list.innerHTML = '';
+  participants.forEach(function(name, i) {
+    var chip = document.createElement('div'); chip.className = 'participant-chip';
+    chip.innerHTML = name + '<button class="chip-remove" onclick="removeParticipant(' + i + ')">×</button>';
+    list.appendChild(chip);
+  });
+  document.getElementById('shuffle-btn').style.display = participants.length >= selectedTeamCount ? 'block' : 'none';
+  if (participants.length >= selectedTeamCount) shuffleParticipants();
+}
+function shuffleParticipants() {
+  var arr = participants.slice();
+  for (var i = arr.length-1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)), t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+  assignedTeamMembers = [];
+  for (var k = 0; k < selectedTeamCount; k++) assignedTeamMembers.push([]);
+  arr.forEach(function(name, idx){ assignedTeamMembers[idx % selectedTeamCount].push(name); });
+  renderTeamsReveal();
+}
+function getTeamName(i){ var el = document.getElementById('team-name-' + i); return el ? el.value || ('קבוצה '+(i+1)) : 'קבוצה '+(i+1); }
+function renderTeamsReveal() {
+  var c = document.getElementById('teams-reveal'); if (!assignedTeamMembers.length) { c.innerHTML = ''; return; }
+  var html = '';
+  for (var i = 0; i < selectedTeamCount; i++) {
+    var m = assignedTeamMembers[i] || [];
+    html += '<div class="team-reveal-row"><div class="team-reveal-name">' + getTeamName(i) + '</div><div class="team-reveal-members">' + m.map(function(x){ return '<span class="team-member-chip">'+x+'</span>'; }).join('') + '</div></div>';
+  }
+  c.innerHTML = html;
+}
+function renderScoreboard(cid, activeTeam) {
+  var el = document.getElementById(cid); el.innerHTML = '';
+  for (var i = 0; i < state.teams.length; i++) {
+    var col = document.createElement('div'); col.className = 'score-col' + (i === activeTeam ? ' active-team' : '');
+    var mh = state.teamMembers[i] && state.teamMembers[i].length ? '<div class="score-members">' + state.teamMembers[i].join(', ') + '</div>' : '';
+    col.innerHTML = '<div class="score-name">' + state.teams[i] + '</div>' + mh + '<div class="score-val">' + state.scores[i] + '</div>';
+    el.appendChild(col);
+  }
+}
+function shuffle(arr){ for (var i = arr.length-1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)), t = arr[i]; arr[i] = arr[j]; arr[j] = t; } return arr; }
+function showScreen(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); }); document.getElementById('screen-'+id).classList.add('active'); }
 
 function startGame(words) {
-  state.words = shuffle(words.slice());
-  state.used = []; state.teams = []; state.teamMembers = [];
+  state.words = shuffle(words.slice()); state.used = []; state.teams = []; state.teamMembers = [];
   for (var i = 0; i < selectedTeamCount; i++) {
     state.teams.push(getTeamName(i));
     state.teamMembers.push(assignedTeamMembers[i] ? assignedTeamMembers[i].slice() : []);
@@ -355,159 +443,81 @@ function startGame(words) {
   showTurnStart();
 }
 
-/* ── all the rest of game logic ── */
-function setTeamCount(n) {
-  selectedTeamCount = n;
-  document.querySelectorAll('.tc-btn').forEach(function(b,i){ b.classList.toggle('active',(i+2)===n); });
-  renderTeamInputs(n);
-  if (participants.length>0) shuffleParticipants(); else document.getElementById('teams-reveal').innerHTML='';
-}
-function renderTeamInputs(n) {
-  var c=document.getElementById('team-inputs'), ex=[];
-  c.querySelectorAll('input').forEach(function(inp){ ex.push(inp.value); });
-  c.innerHTML='';
-  for(var i=0;i<n;i++){
-    var w=document.createElement('div'); w.className='team-input-wrap';
-    var l=document.createElement('label'); l.textContent='קבוצה '+(i+1);
-    var inp=document.createElement('input'); inp.type='text'; inp.id='team-name-'+i;
-    inp.value=ex[i]||('קבוצה '+(i+1));
-    inp.onchange=function(){ if(participants.length>0) renderTeamsReveal(); };
-    w.appendChild(l); w.appendChild(inp); c.appendChild(w);
-  }
-}
-function handlePaste(e) {
-  var text=(e.clipboardData||window.clipboardData).getData('text');
-  var names=text.split(/[\n,،;]+/).map(function(n){ return n.trim(); }).filter(function(n){ return n.length>0; });
-  if(names.length<=1) return;
-  e.preventDefault();
-  names.forEach(function(name){ if(participants.indexOf(name)===-1) participants.push(name); });
-  document.getElementById('participant-input').value='';
-  renderParticipants();
-}
-function addParticipant() {
-  var inp=document.getElementById('participant-input'), name=inp.value.trim();
-  if(!name) return;
-  participants.push(name); inp.value=''; inp.focus(); renderParticipants();
-}
-function removeParticipant(i) {
-  participants.splice(i,1); renderParticipants();
-  if(participants.length>0) shuffleParticipants(); else document.getElementById('teams-reveal').innerHTML='';
-}
-function renderParticipants() {
-  var list=document.getElementById('participants-list'); list.innerHTML='';
-  participants.forEach(function(name,i){
-    var chip=document.createElement('div'); chip.className='participant-chip';
-    chip.innerHTML=name+'<button class="chip-remove" onclick="removeParticipant('+i+')">×</button>';
-    list.appendChild(chip);
-  });
-  document.getElementById('shuffle-btn').style.display=participants.length>=selectedTeamCount?'block':'none';
-  if(participants.length>=selectedTeamCount) shuffleParticipants();
-}
-function shuffleParticipants() {
-  var arr=participants.slice();
-  for(var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)),t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
-  assignedTeamMembers=[];
-  for(var k=0;k<selectedTeamCount;k++) assignedTeamMembers.push([]);
-  arr.forEach(function(name,idx){ assignedTeamMembers[idx%selectedTeamCount].push(name); });
-  renderTeamsReveal();
-}
-function getTeamName(i){ var el=document.getElementById('team-name-'+i); return el?el.value||('קבוצה '+(i+1)):'קבוצה '+(i+1); }
-function renderTeamsReveal(){
-  var c=document.getElementById('teams-reveal'); if(!assignedTeamMembers.length){c.innerHTML='';return;}
-  var html='';
-  for(var i=0;i<selectedTeamCount;i++){
-    var members=assignedTeamMembers[i]||[];
-    html+='<div class="team-reveal-row"><div class="team-reveal-name">'+getTeamName(i)+'</div><div class="team-reveal-members">'+members.map(function(m){ return '<span class="team-member-chip">'+m+'</span>'; }).join('')+'</div></div>';
-  }
-  c.innerHTML=html;
-}
-function renderScoreboard(cid, activeTeam){
-  var el=document.getElementById(cid); el.innerHTML='';
-  for(var i=0;i<state.teams.length;i++){
-    var col=document.createElement('div'); col.className='score-col'+(i===activeTeam?' active-team':'');
-    var mh=state.teamMembers[i]&&state.teamMembers[i].length?'<div class="score-members">'+state.teamMembers[i].join(', ')+'</div>':'';
-    col.innerHTML='<div class="score-name">'+state.teams[i]+'</div>'+mh+'<div class="score-val">'+state.scores[i]+'</div>';
-    el.appendChild(col);
-  }
-}
-function shuffle(arr){ for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=arr[i];arr[i]=arr[j];arr[j]=t;} return arr; }
-function showScreen(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); }); document.getElementById('screen-'+id).classList.add('active'); }
-
-function showTurnStart(){
-  var t=state.currentTeam;
-  document.getElementById('turn-team-name').textContent=state.teams[t];
-  var m=state.teamMembers[t]; document.getElementById('turn-members').textContent=m&&m.length?m.join(' · '):'';
-  renderScoreboard('sb-turnstart',t);
-  publish('turn-start');
+function showTurnStart() {
+  var t = state.currentTeam;
+  document.getElementById('turn-team-name').textContent = state.teams[t];
+  var m = state.teamMembers[t]; document.getElementById('turn-members').textContent = m && m.length ? m.join(' · ') : '';
+  renderScoreboard('sb-turnstart', t);
+  broadcast('turn-start');
   showScreen('turn-start');
 }
-function startRound(){
-  state.roundCorrect=[]; state.roundSkipped=[]; state.timeLeft=state.roundTime;
-  document.getElementById('round-log').innerHTML='';
+function startRound() {
+  state.roundCorrect = []; state.roundSkipped = []; state.timeLeft = state.roundTime;
+  document.getElementById('round-log').innerHTML = '';
   updateTimerDisplay(); showScreen('playing'); nextWord();
-  state.timer=setInterval(tick,1000);
+  state.timer = setInterval(tick, 1000);
 }
-function tick(){ state.timeLeft--; updateTimerDisplay(); publish('playing'); if(state.timeLeft<=0) endRound(); }
-function updateTimerDisplay(){
-  var el=document.getElementById('timer-display'),bar=document.getElementById('timer-bar'),low=state.timeLeft<=10;
-  el.textContent=state.timeLeft; el.className='timer-num'+(low?' low':'');
-  var pct=Math.max(0,(state.timeLeft/state.totalTime)*100);
-  bar.style.width=pct+'%'; bar.className='timer-bar'+(low?' low':'');
+function tick() { state.timeLeft--; updateTimerDisplay(); broadcast('playing'); if (state.timeLeft <= 0) endRound(); }
+function updateTimerDisplay() {
+  var el = document.getElementById('timer-display'), bar = document.getElementById('timer-bar'), low = state.timeLeft <= 10;
+  el.textContent = state.timeLeft; el.className = 'timer-num' + (low ? ' low' : '');
+  bar.style.width = Math.max(0, state.timeLeft / state.totalTime * 100) + '%';
+  bar.className = 'timer-bar' + (low ? ' low' : '');
 }
-function nextWord(){
-  var av=state.words.filter(function(w){ return state.used.indexOf(w)===-1; });
-  document.getElementById('words-left-count').textContent=av.length+' מילים נותרו';
-  if(av.length===0){endRound();return;}
-  state.currentWord=av[Math.floor(Math.random()*av.length)];
+function nextWord() {
+  var av = state.words.filter(function(w){ return state.used.indexOf(w) === -1; });
+  document.getElementById('words-left-count').textContent = av.length + ' מילים נותרו';
+  if (av.length === 0) { endRound(); return; }
+  state.currentWord = av[Math.floor(Math.random() * av.length)];
   state.used.push(state.currentWord);
-  document.getElementById('current-word').textContent=state.currentWord;
-  publish('playing');
+  document.getElementById('current-word').textContent = state.currentWord;
+  broadcast('playing');
 }
-function markCorrect(){ if(!state.currentWord) return; state.roundCorrect.push(state.currentWord); addLog(state.currentWord,'correct'); nextWord(); }
-function skipWord(){ if(!state.currentWord) return; state.roundSkipped.push(state.currentWord); addLog(state.currentWord,'skip'); nextWord(); }
-function addLog(word,type){
-  var div=document.createElement('div'); div.className='log-item '+type;
-  div.innerHTML='<span>'+word+'</span><span class="log-tag">'+(type==='correct'?'✓ ניחשו':'⟶ דלג')+'</span>';
+function markCorrect() { if (!state.currentWord) return; state.roundCorrect.push(state.currentWord); addLog(state.currentWord, 'correct'); nextWord(); }
+function skipWord()    { if (!state.currentWord) return; state.roundSkipped.push(state.currentWord); addLog(state.currentWord, 'skip'); nextWord(); }
+function addLog(word, type) {
+  var div = document.createElement('div'); div.className = 'log-item ' + type;
+  div.innerHTML = '<span>' + word + '</span><span class="log-tag">' + (type==='correct' ? '✓ ניחשו' : '⟶ דלג') + '</span>';
   document.getElementById('round-log').prepend(div);
 }
-function endRound(){
-  clearInterval(state.timer); state.timer=null;
-  var pts=state.roundCorrect.length+state.roundSkipped.length*state.skipPenalty;
-  state.scores[state.currentTeam]+=pts;
-  document.getElementById('turn-pts').textContent='+'+pts+' נקודות';
-  document.getElementById('turn-sub').textContent=state.teams[state.currentTeam]+' — ניחשו '+state.roundCorrect.length+(state.roundSkipped.length?', דילגו '+state.roundSkipped.length:'');
-  document.getElementById('turn-list').innerHTML=
-    state.roundCorrect.map(function(w){ return '<div class="summary-row"><span>'+w+'</span><span style="color:rgba(255,255,255,0.6);">✓</span></div>'; }).join('')+
+function endRound() {
+  clearInterval(state.timer); state.timer = null;
+  var pts = state.roundCorrect.length + state.roundSkipped.length * state.skipPenalty;
+  state.scores[state.currentTeam] += pts;
+  document.getElementById('turn-pts').textContent = '+' + pts + ' נקודות';
+  document.getElementById('turn-sub').textContent = state.teams[state.currentTeam] + ' — ניחשו ' + state.roundCorrect.length + (state.roundSkipped.length ? ', דילגו ' + state.roundSkipped.length : '');
+  document.getElementById('turn-list').innerHTML =
+    state.roundCorrect.map(function(w){ return '<div class="summary-row"><span>'+w+'</span><span style="color:rgba(255,255,255,0.6);">✓</span></div>'; }).join('') +
     state.roundSkipped.map(function(w){ return '<div class="summary-row"><span style="opacity:0.6;">'+w+'</span><span style="color:rgba(255,255,255,0.4);">—</span></div>'; }).join('');
-  renderScoreboard('sb-turnend',state.currentTeam);
-  var wl=state.words.filter(function(w){ return state.used.indexOf(w)===-1; }).length;
-  var btn=document.getElementById('next-turn-btn');
-  if(wl===0){btn.textContent='🏁 סיים משחק';btn.onclick=showEndGame;}else{btn.textContent='תור הבא ▶';btn.onclick=nextTurn;}
-  publish('turn-end');
+  renderScoreboard('sb-turnend', state.currentTeam);
+  var wl = state.words.filter(function(w){ return state.used.indexOf(w) === -1; }).length;
+  var btn = document.getElementById('next-turn-btn');
+  if (wl === 0) { btn.textContent = '🏁 סיים משחק'; btn.onclick = showEndGame; }
+  else          { btn.textContent = 'תור הבא ▶';    btn.onclick = nextTurn; }
+  broadcast('turn-end');
   showScreen('turn-end');
 }
-function nextTurn(){ state.currentTeam=(state.currentTeam+1)%state.teams.length; showTurnStart(); }
-function showEndGame(){
-  var mx=Math.max.apply(null,state.scores);
-  var sorted=state.teams.map(function(name,i){ return{name:name,score:state.scores[i],members:state.teamMembers[i]}; }).sort(function(a,b){ return b.score-a.score; });
-  var ws=sorted.filter(function(t){ return t.score===mx; });
-  document.getElementById('winner-name').textContent=ws.length===1?ws[0].name+' ניצחו!':'תיקו!';
-  document.getElementById('winner-sub').textContent=mx+' נקודות';
-  document.getElementById('end-scores').innerHTML=sorted.map(function(t){
-    var iw=t.score===mx;
-    var mh=t.members&&t.members.length?'<div class="end-members">'+t.members.join(', ')+'</div>':'';
+function nextTurn() { state.currentTeam = (state.currentTeam + 1) % state.teams.length; showTurnStart(); }
+function showEndGame() {
+  var mx = Math.max.apply(null, state.scores);
+  var sorted = state.teams.map(function(name,i){ return {name:name,score:state.scores[i],members:state.teamMembers[i]}; }).sort(function(a,b){ return b.score-a.score; });
+  var ws = sorted.filter(function(t){ return t.score===mx; });
+  document.getElementById('winner-name').textContent = ws.length===1 ? ws[0].name+' ניצחו!' : 'תיקו!';
+  document.getElementById('winner-sub').textContent = mx + ' נקודות';
+  document.getElementById('end-scores').innerHTML = sorted.map(function(t){
+    var iw = t.score===mx, mh = t.members&&t.members.length ? '<div class="end-members">'+t.members.join(', ')+'</div>' : '';
     return '<div class="end-score-row'+(iw?' winner':'')+'"><div><div>'+(iw?'🏆 ':'')+t.name+'</div>'+mh+'</div><div>'+t.score+' נקודות</div></div>';
   }).join('');
-  publish('end');
+  broadcast('end');
   showScreen('end');
 }
-function resetGame(){
-  if(mqttClient){ mqttClient.publish('alias/game/'+roomCode,'',{retain:true}); mqttClient.end(); mqttClient=null; mqttReady=false; }
-  participants=[]; assignedTeamMembers=[];
-  document.getElementById('participants-list').innerHTML='';
-  document.getElementById('teams-reveal').innerHTML='';
-  document.getElementById('shuffle-btn').style.display='none';
-  document.getElementById('share-card').style.display='none';
+function resetGame() {
+  if (peer) { peer.destroy(); peer = null; }
+  playerConns = []; lastState = null;
+  participants = []; assignedTeamMembers = [];
+  document.getElementById('participants-list').innerHTML = '';
+  document.getElementById('teams-reveal').innerHTML = '';
+  document.getElementById('shuffle-btn').style.display = 'none';
   document.getElementById('room-bar').classList.remove('visible');
   showScreen('setup');
 }

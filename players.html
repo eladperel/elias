@@ -4,31 +4,31 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>אליאס — שחקנים</title>
-<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 16px; }
 .container { width: 100%; max-width: 560px; }
 
-.join-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 80vh; text-align: center; }
-.join-logo { font-size: 80px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); margin-bottom: 24px; }
+.join-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 85vh; text-align: center; }
+.join-logo { font-size: 80px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); margin-bottom: 28px; }
 .join-card { background: rgba(0,0,0,0.2); border-radius: 20px; padding: 28px 24px; width: 100%; max-width: 340px; border: 1px solid rgba(255,255,255,0.2); }
 .join-label { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 10px; }
-.join-input { width: 100%; padding: 14px; background: rgba(0,0,0,0.25); border: 2px solid rgba(255,255,255,0.4); border-radius: 12px; color: #fff; font-size: 28px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; text-align: center; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 14px; }
+.join-input { width: 100%; padding: 14px; background: rgba(0,0,0,0.25); border: 2px solid rgba(255,255,255,0.4); border-radius: 12px; color: #fff; font-size: 32px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; text-align: center; letter-spacing: 8px; text-transform: uppercase; margin-bottom: 14px; }
 .join-input::placeholder { color: rgba(255,255,255,0.3); font-size: 20px; letter-spacing: 2px; }
 .join-btn { width: 100%; padding: 14px; background: #fff; color: #e31e24; border: none; border-radius: 12px; font-size: 18px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; }
 .join-btn:active { transform: scale(0.97); }
 .join-error { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 10px; min-height: 20px; }
 
-.waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; text-align: center; }
+.waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 75vh; text-align: center; }
 .waiting-logo { font-size: 72px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); margin-bottom: 16px; }
-.waiting-sub  { font-size: 18px; color: rgba(255,255,255,0.7); }
+.waiting-sub { font-size: 18px; color: rgba(255,255,255,0.7); }
 .waiting-code { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 8px; letter-spacing: 2px; }
 .dot-pulse { display: flex; gap: 8px; justify-content: center; margin-top: 24px; }
 .dot { width: 10px; height: 10px; background: rgba(255,255,255,0.6); border-radius: 50%; animation: db 1.2s infinite ease-in-out; }
-.dot:nth-child(2){animation-delay:0.2s}.dot:nth-child(3){animation-delay:0.4s}
-@keyframes db{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
+.dot:nth-child(2){ animation-delay: 0.2s } .dot:nth-child(3){ animation-delay: 0.4s }
+@keyframes db { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
 
 .game-view { display: none; }
 .game-view.active { display: block; }
@@ -36,7 +36,7 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 .topbar { background: rgba(0,0,0,0.2); border-radius: 16px; padding: 12px 18px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.15); }
 .topbar-logo  { font-size: 22px; font-weight: 900; letter-spacing: 2px; }
 .topbar-phase { font-size: 12px; color: rgba(255,255,255,0.6); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-.topbar-code  { font-size: 12px; color: rgba(255,255,255,0.35); letter-spacing: 2px; }
+.topbar-code  { font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: 2px; }
 
 .scoreboard { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
 .score-card { flex: 1; min-width: 90px; background: rgba(0,0,0,0.18); border-radius: 14px; padding: 12px 10px; text-align: center; border: 2px solid transparent; transition: border-color 0.3s; }
@@ -58,7 +58,7 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 .timer-section { text-align: center; margin-bottom: 8px; }
 .timer-big { font-size: 110px; font-weight: 900; line-height: 1; }
 .timer-big.low { animation: blink 0.5s infinite alternate; }
-@keyframes blink{from{opacity:1}to{opacity:0.45}}
+@keyframes blink { from{opacity:1} to{opacity:0.45} }
 .timer-bar-bg { background: rgba(0,0,0,0.2); border-radius: 6px; height: 8px; margin-bottom: 16px; }
 .timer-bar    { height: 8px; border-radius: 6px; background: rgba(255,255,255,0.8); transition: width 0.9s linear; }
 .timer-bar.low { background: rgba(255,255,255,0.4); }
@@ -69,9 +69,9 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 .word-hidden-sub  { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 6px; }
 
 .live-counters { display: flex; gap: 10px; margin-bottom: 16px; }
-.counter-box { flex: 1; background: rgba(0,0,0,0.18); border-radius: 14px; padding: 14px 12px; text-align: center; border: 1px solid rgba(255,255,255,0.15); }
+.counter-box   { flex: 1; background: rgba(0,0,0,0.18); border-radius: 14px; padding: 14px 12px; text-align: center; border: 1px solid rgba(255,255,255,0.15); }
 .counter-label { font-size: 11px; color: rgba(255,255,255,0.55); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-.counter-val { font-size: 38px; font-weight: 900; }
+.counter-val   { font-size: 38px; font-weight: 900; }
 .counter-val.green { color: #2ecc71; }
 .counter-val.red   { color: #ff6b6b; }
 .counter-val.gray  { color: rgba(255,255,255,0.5); }
@@ -84,14 +84,19 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 .word-result-card.correct { background: rgba(46,204,113,0.2); border: 1px solid rgba(46,204,113,0.4); }
 .word-result-card.skip    { background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.2); color: rgba(255,255,255,0.5); }
 
-.end-trophy  { font-size: 80px; text-align: center; margin-bottom: 12px; }
-.end-winner  { font-size: 38px; font-weight: 900; text-align: center; margin-bottom: 4px; }
+.end-trophy     { font-size: 80px; text-align: center; margin-bottom: 12px; }
+.end-winner     { font-size: 38px; font-weight: 900; text-align: center; margin-bottom: 4px; }
 .end-winner-sub { font-size: 15px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 20px; }
-.final-scores { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.2); }
+.final-scores   { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.2); }
 .final-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 16px; }
 .final-row:last-child { border-bottom: none; }
 .final-row.winner { color: #ffe066; font-weight: 900; font-size: 18px; }
 .final-row-members { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+
+.conn-err { background: rgba(0,0,0,0.3); border-radius: 14px; padding: 24px 20px; text-align: center; border: 1px solid rgba(255,255,255,0.15); margin-top: 40px; }
+.conn-err h3 { font-size: 20px; margin-bottom: 8px; }
+.conn-err p  { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 16px; }
+.retry-btn { padding: 12px 28px; background: #fff; color: #e31e24; border: none; border-radius: 10px; font-size: 16px; font-weight: 700; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -101,7 +106,9 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
     <div class="join-logo">אליאס</div>
     <div class="join-card">
       <div class="join-label">הזן קוד חדר</div>
-      <input class="join-input" id="code-input" maxlength="5" placeholder="XXXXX" oninput="this.value=this.value.toUpperCase()" onkeydown="if(event.key==='Enter') joinGame()" />
+      <input class="join-input" id="code-input" maxlength="5" placeholder="XXXXX"
+             oninput="this.value=this.value.toUpperCase()"
+             onkeydown="if(event.key==='Enter') joinGame()" />
       <button class="join-btn" onclick="joinGame()">הצטרף למשחק</button>
       <div class="join-error" id="join-error"></div>
     </div>
@@ -109,9 +116,17 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
 
   <div id="waiting-screen" class="waiting" style="display:none">
     <div class="waiting-logo">אליאס</div>
-    <div class="waiting-sub">ממתין למנחה...</div>
+    <div class="waiting-sub" id="waiting-text">מתחבר...</div>
     <div class="waiting-code" id="waiting-code"></div>
     <div class="dot-pulse"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  </div>
+
+  <div id="conn-err-screen" style="display:none">
+    <div class="conn-err">
+      <h3>😕 לא ניתן להתחבר</h3>
+      <p id="err-text">בדוק שהקוד נכון והמנחה התחיל את המשחק.</p>
+      <button class="retry-btn" onclick="goBack()">← חזרה</button>
+    </div>
   </div>
 
   <div id="view-turn-start" class="game-view">
@@ -170,16 +185,16 @@ body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff
       <div class="topbar-phase">סוף המשחק</div>
     </div>
     <div class="end-trophy">🏆</div>
-    <div class="end-winner" id="p-end-winner"></div>
+    <div class="end-winner"     id="p-end-winner"></div>
     <div class="end-winner-sub" id="p-end-winner-sub"></div>
-    <div class="final-scores" id="p-final-scores"></div>
+    <div class="final-scores"   id="p-final-scores"></div>
   </div>
 
 </div>
 <script>
-var BROKER = 'wss://broker.emqx.io:8084/mqtt';
 var roomCode = '';
-var mqttClient = null;
+var myPeer = null;
+var hostConn = null;
 
 function getUrlRoom() {
   var params = new URLSearchParams(window.location.search);
@@ -190,38 +205,88 @@ function joinGame() {
   var code = (document.getElementById('code-input').value || '').trim().toUpperCase();
   if (code.length !== 5) { document.getElementById('join-error').textContent = 'קוד חדר חייב להיות 5 תווים'; return; }
   document.getElementById('join-error').textContent = '';
-  connectAndWait(code);
+  connectToHost(code);
 }
 
-function connectAndWait(code) {
+function connectToHost(code) {
   roomCode = code;
-  document.getElementById('join-screen').style.display = 'none';
+  hideAll();
   document.getElementById('waiting-screen').style.display = '';
   document.getElementById('waiting-code').textContent = 'קוד חדר: ' + roomCode;
+  document.getElementById('waiting-text').textContent = 'מתחבר למנחה...';
 
-  var cid = 'alias_player_' + Math.random().toString(16).substr(2, 8);
-  mqttClient = mqtt.connect(BROKER, { clientId: cid, clean: true });
+  var cid = 'alias-player-' + Math.random().toString(16).substr(2, 10);
+  myPeer = new Peer(cid);
 
-  mqttClient.on('connect', function() {
-    mqttClient.subscribe('alias/game/' + roomCode, { qos: 1 });
+  var timeout = setTimeout(function() {
+    showError('לא הצלחנו להתחבר. בדוק את החיבור לאינטרנט.');
+  }, 15000);
+
+  myPeer.on('open', function() {
+    clearTimeout(timeout);
+    document.getElementById('waiting-text').textContent = 'מחפש את המנחה...';
+    hostConn = myPeer.connect('alias-game-' + roomCode, { reliable: true });
+
+    var connTimeout = setTimeout(function() {
+      showError('לא מצאנו חדר עם הקוד ' + roomCode + '. בדוק שהמנחה פתח משחק.');
+    }, 10000);
+
+    hostConn.on('open', function() {
+      clearTimeout(connTimeout);
+      document.getElementById('waiting-text').textContent = 'מחובר! ממתין למשחק...';
+    });
+
+    hostConn.on('data', function(rawData) {
+      try {
+        var data = typeof rawData === 'string' ? JSON.parse(rawData) : rawData;
+        render(data);
+      } catch(e) {}
+    });
+
+    hostConn.on('close', function() {
+      showError('החיבור למנחה נותק.');
+    });
+
+    hostConn.on('error', function(err) {
+      clearTimeout(connTimeout);
+      showError('שגיאת חיבור: ' + err.message);
+    });
   });
 
-  mqttClient.on('message', function(topic, message) {
-    var msg = message.toString();
-    if (!msg) return;
-    try { render(JSON.parse(msg)); } catch(e) {}
+  myPeer.on('error', function(err) {
+    clearTimeout(timeout);
+    showError('שגיאה: ' + err.message);
   });
+}
+
+function hideAll() {
+  document.getElementById('join-screen').style.display = 'none';
+  document.getElementById('waiting-screen').style.display = 'none';
+  document.getElementById('conn-err-screen').style.display = 'none';
+  document.querySelectorAll('.game-view').forEach(function(v){ v.classList.remove('active'); });
+}
+
+function showError(msg) {
+  hideAll();
+  document.getElementById('err-text').textContent = msg;
+  document.getElementById('conn-err-screen').style.display = 'block';
+  if (myPeer) { myPeer.destroy(); myPeer = null; }
+}
+
+function goBack() {
+  hideAll();
+  document.getElementById('join-screen').style.display = '';
+  document.getElementById('code-input').value = roomCode;
 }
 
 function showView(id) {
-  document.getElementById('waiting-screen').style.display = 'none';
-  document.querySelectorAll('.game-view').forEach(function(v){ v.classList.remove('active'); });
+  hideAll();
   var el = document.getElementById('view-' + id);
   if (el) el.classList.add('active');
 }
 
 function setTopbarCodes() {
-  ['tc1','tc2','tc3'].forEach(function(id){
+  ['tc1','tc2','tc3'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.textContent = roomCode;
   });
@@ -276,10 +341,10 @@ function render(data) {
       data.teams[data.currentTeam] + ' — ניחשו ' + data.correctCount +
       (data.skipCount ? ', דילגו ' + data.skipCount : '');
     document.getElementById('p-words-grid').innerHTML =
-      (data.roundCorrectWords || []).map(function(w){
+      (data.roundCorrectWords || []).map(function(w) {
         return '<div class="word-result-card correct"><span>' + w + '</span><span>✓</span></div>';
       }).join('') +
-      (data.roundSkippedWords || []).map(function(w){
+      (data.roundSkippedWords || []).map(function(w) {
         return '<div class="word-result-card skip"><span>' + w + '</span><span>—</span></div>';
       }).join('');
     buildScoreboard('p-sb-turnend', data);
@@ -289,20 +354,20 @@ function render(data) {
     document.getElementById('p-end-winner').textContent = data.winner || '';
     document.getElementById('p-end-winner-sub').textContent = data.winnerSub || '';
     var maxScore = Math.max.apply(null, data.scores);
-    var sorted = data.teams.map(function(name, i){
+    var sorted = data.teams.map(function(name, i) {
       return { name: name, score: data.scores[i], members: data.teamMembers[i] };
-    }).sort(function(a,b){ return b.score - a.score; });
+    }).sort(function(a, b) { return b.score - a.score; });
     document.getElementById('p-final-scores').innerHTML = sorted.map(function(t) {
       var iw = t.score === maxScore;
       var mh = t.members && t.members.length ? '<div class="final-row-members">' + t.members.join(', ') + '</div>' : '';
-      return '<div class="final-row' + (iw?' winner':'') + '"><div><div>' + (iw?'🏆 ':'') + t.name + '</div>' + mh + '</div><div>' + t.score + ' נקודות</div></div>';
+      return '<div class="final-row' + (iw ? ' winner' : '') + '"><div><div>' + (iw ? '🏆 ' : '') + t.name + '</div>' + mh + '</div><div>' + t.score + ' נקודות</div></div>';
     }).join('');
   }
 }
 
 var urlRoom = getUrlRoom();
 if (urlRoom.length === 5) {
-  connectAndWait(urlRoom);
+  connectToHost(urlRoom);
 }
 </script>
 </body>
