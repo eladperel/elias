@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>אליאס — שחקנים</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Heebo', Arial, sans-serif;
+  background: #e31e24; color: #fff;
+  min-height: 100vh; display: flex;
+  align-items: flex-start; justify-content: center; padding: 16px;
+}
+.container { width: 100%; max-width: 560px; }
+
+/* waiting */
+.waiting {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 80vh; text-align: center;
+}
+.waiting-logo { font-size: 80px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); margin-bottom: 16px; }
+.waiting-sub   { font-size: 18px; color: rgba(255,255,255,0.7); }
+.dot-pulse { display: flex; gap: 8px; justify-content: center; margin-top: 24px; }
+.dot { width: 10px; height: 10px; background: rgba(255,255,255,0.6); border-radius: 50%; animation: dotbounce 1.2s infinite ease-in-out; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotbounce { 0%,80%,100%{transform:scale(0.6);opacity:0.4} 40%{transform:scale(1);opacity:1} }
+
+/* main view */
+.view { display: none; }
+.view.active { display: block; }
+
+/* header bar */
+.topbar {
+  background: rgba(0,0,0,0.2); border-radius: 16px;
+  padding: 14px 18px; margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.topbar-logo { font-size: 24px; font-weight: 900; letter-spacing: 2px; }
+.topbar-phase { font-size: 13px; color: rgba(255,255,255,0.6); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+/* scoreboard */
+.scoreboard {
+  display: flex; flex-wrap: wrap; gap: 10px;
+  margin-bottom: 16px;
+}
+.score-card {
+  flex: 1; min-width: 100px;
+  background: rgba(0,0,0,0.18); border-radius: 14px;
+  padding: 14px 12px; text-align: center;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
+}
+.score-card.active-turn { border-color: #ffe066; background: rgba(255,224,102,0.12); }
+.score-card-name    { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 2px; }
+.score-card-members { font-size: 11px; color: rgba(255,255,255,0.4); margin-bottom: 4px; min-height: 14px; }
+.score-card-val     { font-size: 40px; font-weight: 900; color: #fff; line-height: 1; }
+.score-card.active-turn .score-card-val  { color: #ffe066; }
+.score-card.active-turn .score-card-name { color: #ffe066; }
+
+/* current turn card */
+.turn-card {
+  background: rgba(0,0,0,0.2); border-radius: 20px;
+  padding: 22px 20px; margin-bottom: 16px;
+  border: 1px solid rgba(255,255,255,0.2); text-align: center;
+}
+.turn-card-label { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+.turn-card-team  { font-size: 32px; font-weight: 900; }
+.turn-card-members { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+
+/* timer */
+.timer-section { text-align: center; margin-bottom: 10px; }
+.timer-big { font-size: 110px; font-weight: 900; line-height: 1; }
+.timer-big.low { animation: blink 0.5s infinite alternate; }
+@keyframes blink { from{opacity:1} to{opacity:0.45} }
+.timer-bar-bg { background: rgba(0,0,0,0.2); border-radius: 6px; height: 8px; margin-bottom: 16px; }
+.timer-bar    { height: 8px; border-radius: 6px; background: rgba(255,255,255,0.8); transition: width 0.9s linear; }
+.timer-bar.low { background: rgba(255,255,255,0.4); }
+
+/* word hidden */
+.word-hidden {
+  background: rgba(0,0,0,0.2); border-radius: 20px;
+  padding: 32px 20px; text-align: center; margin-bottom: 16px;
+  border: 2px dashed rgba(255,255,255,0.2);
+}
+.word-hidden-icon { font-size: 48px; margin-bottom: 10px; }
+.word-hidden-text { font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.6); }
+.word-hidden-sub  { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 6px; }
+
+/* live counters */
+.live-counters { display: flex; gap: 10px; margin-bottom: 16px; }
+.counter-box {
+  flex: 1; background: rgba(0,0,0,0.18); border-radius: 14px;
+  padding: 14px 12px; text-align: center;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.counter-label { font-size: 12px; color: rgba(255,255,255,0.55); margin-bottom: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.counter-val   { font-size: 38px; font-weight: 900; }
+.counter-val.green { color: #2ecc71; }
+.counter-val.red   { color: #ff6b6b; }
+.counter-val.gray  { color: rgba(255,255,255,0.5); }
+
+/* round summary */
+.summary-header { text-align: center; margin-bottom: 16px; }
+.summary-pts-big { font-size: 56px; font-weight: 900; }
+.summary-pts-sub { font-size: 15px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+.words-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.word-result-card {
+  border-radius: 10px; padding: 9px 12px; font-size: 14px; font-weight: 700;
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+}
+.word-result-card.correct { background: rgba(46,204,113,0.2); border: 1px solid rgba(46,204,113,0.4); }
+.word-result-card.skip    { background: rgba(255,107,107,0.12); border: 1px solid rgba(255,107,107,0.2); color: rgba(255,255,255,0.5); }
+.word-result-icon { font-size: 16px; }
+
+/* waiting for next turn */
+.next-turn-wait {
+  background: rgba(0,0,0,0.2); border-radius: 16px;
+  padding: 20px; text-align: center;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.next-turn-wait p { font-size: 15px; color: rgba(255,255,255,0.6); }
+
+/* end screen */
+.end-trophy { font-size: 80px; text-align: center; margin-bottom: 12px; }
+.end-winner { font-size: 38px; font-weight: 900; text-align: center; margin-bottom: 4px; }
+.end-winner-sub { font-size: 15px; color: rgba(255,255,255,0.7); text-align: center; margin-bottom: 20px; }
+.final-scores {
+  background: rgba(0,0,0,0.18); border-radius: 16px;
+  padding: 16px; border: 1px solid rgba(255,255,255,0.2);
+}
+.final-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 4px; border-bottom: 1px solid rgba(255,255,255,0.1);
+  font-size: 16px;
+}
+.final-row:last-child { border-bottom: none; }
+.final-row.winner     { color: #ffe066; font-weight: 900; font-size: 18px; }
+.final-row-members    { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- WAITING -->
+  <div id="view-waiting" class="waiting">
+    <div class="waiting-logo">אליאס</div>
+    <div class="waiting-sub">ממתין למנחה להתחיל את המשחק...</div>
+    <div class="dot-pulse">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+
+  <!-- TURN START -->
+  <div id="view-turn-start" class="view">
+    <div class="topbar">
+      <div class="topbar-logo">אליאס</div>
+      <div class="topbar-phase">הכנה לסיבוב</div>
+    </div>
+    <div class="scoreboard" id="p-sb-turnstart"></div>
+    <div class="turn-card">
+      <div class="turn-card-label">תור</div>
+      <div class="turn-card-team" id="p-turn-team">—</div>
+      <div class="turn-card-members" id="p-turn-members"></div>
+    </div>
+    <div class="next-turn-wait">
+      <p>🎯 ממתין למנחה להתחיל את הסיבוב...</p>
+    </div>
+  </div>
+
+  <!-- PLAYING -->
+  <div id="view-playing" class="view">
+    <div class="topbar">
+      <div class="topbar-logo">אליאס</div>
+      <div class="topbar-phase" id="p-playing-team-label">משחק</div>
+    </div>
+    <div class="timer-section">
+      <div class="timer-big" id="p-timer">60</div>
+    </div>
+    <div class="timer-bar-bg">
+      <div class="timer-bar" id="p-timer-bar" style="width:100%"></div>
+    </div>
+    <div class="word-hidden">
+      <div class="word-hidden-icon">🙈</div>
+      <div class="word-hidden-text">המנחה מסביר עכשיו...</div>
+      <div class="word-hidden-sub">המילה מוסתרת ממך</div>
+    </div>
+    <div class="live-counters">
+      <div class="counter-box">
+        <div class="counter-label">ניחשו</div>
+        <div class="counter-val green" id="p-correct">0</div>
+      </div>
+      <div class="counter-box">
+        <div class="counter-label">דילגו</div>
+        <div class="counter-val red" id="p-skip">0</div>
+      </div>
+      <div class="counter-box">
+        <div class="counter-label">נותרו</div>
+        <div class="counter-val gray" id="p-words-left">—</div>
+      </div>
+    </div>
+    <div class="scoreboard" id="p-sb-playing"></div>
+  </div>
+
+  <!-- TURN END -->
+  <div id="view-turn-end" class="view">
+    <div class="topbar">
+      <div class="topbar-logo">אליאס</div>
+      <div class="topbar-phase">סוף סיבוב</div>
+    </div>
+    <div class="summary-header">
+      <div class="summary-pts-big" id="p-summary-pts">+0</div>
+      <div class="summary-pts-sub" id="p-summary-sub"></div>
+    </div>
+    <div class="words-grid" id="p-words-grid"></div>
+    <div class="scoreboard" id="p-sb-turnend"></div>
+  </div>
+
+  <!-- END -->
+  <div id="view-end" class="view">
+    <div class="topbar">
+      <div class="topbar-logo">אליאס</div>
+      <div class="topbar-phase">סוף המשחק</div>
+    </div>
+    <div class="end-trophy">🏆</div>
+    <div class="end-winner" id="p-end-winner"></div>
+    <div class="end-winner-sub" id="p-end-winner-sub"></div>
+    <div class="final-scores" id="p-final-scores"></div>
+  </div>
+
+</div>
+<script>
+var lastTs = 0;
+var lastPhase = null;
+
+function showView(id) {
+  document.getElementById('view-waiting').style.display = 'none';
+  document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+  var el = document.getElementById('view-' + id);
+  if (el) el.classList.add('active');
+}
+
+function buildScoreboard(containerId, data, activeTeam) {
+  var el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  for (var i = 0; i < data.teams.length; i++) {
+    var card = document.createElement('div');
+    card.className = 'score-card' + (i === data.currentTeam ? ' active-turn' : '');
+    var membersHtml = data.teamMembers[i] && data.teamMembers[i].length
+      ? '<div class="score-card-members">' + data.teamMembers[i].join(', ') + '</div>' : '<div class="score-card-members"></div>';
+    card.innerHTML = '<div class="score-card-name">' + data.teams[i] + '</div>' +
+                     membersHtml +
+                     '<div class="score-card-val">' + data.scores[i] + '</div>';
+    el.appendChild(card);
+  }
+}
+
+function render(data) {
+  if (data.phase === 'turn-start') {
+    showView('turn-start');
+    document.getElementById('p-turn-team').textContent = data.teams[data.currentTeam];
+    var members = data.teamMembers[data.currentTeam];
+    document.getElementById('p-turn-members').textContent = members && members.length ? members.join(' · ') : '';
+    buildScoreboard('p-sb-turnstart', data);
+
+  } else if (data.phase === 'playing') {
+    showView('playing');
+    var low = data.timeLeft <= 10;
+    var timerEl = document.getElementById('p-timer');
+    timerEl.textContent = data.timeLeft;
+    timerEl.className = 'timer-big' + (low ? ' low' : '');
+    var pct = Math.max(0, (data.timeLeft / data.totalTime) * 100);
+    var bar = document.getElementById('p-timer-bar');
+    bar.style.width = pct + '%';
+    bar.className = 'timer-bar' + (low ? ' low' : '');
+    document.getElementById('p-playing-team-label').textContent = data.teams[data.currentTeam] + ' — בתור';
+    document.getElementById('p-correct').textContent = data.correctCount;
+    document.getElementById('p-skip').textContent = data.skipCount;
+    document.getElementById('p-words-left').textContent = data.wordsLeft;
+    buildScoreboard('p-sb-playing', data);
+
+  } else if (data.phase === 'turn-end') {
+    showView('turn-end');
+    var pts = data.correctCount + data.skipCount * (data.skipPenalty || 0);
+    document.getElementById('p-summary-pts').textContent = '+' + data.correctCount + ' נקודות';
+    document.getElementById('p-summary-sub').textContent =
+      data.teams[data.currentTeam] + ' — ניחשו ' + data.correctCount +
+      (data.skipCount ? ', דילגו ' + data.skipCount : '');
+    var grid = document.getElementById('p-words-grid');
+    grid.innerHTML = (data.roundCorrectWords || []).map(function(w){
+      return '<div class="word-result-card correct"><span>' + w + '</span><span class="word-result-icon">✓</span></div>';
+    }).join('') + (data.roundSkippedWords || []).map(function(w){
+      return '<div class="word-result-card skip"><span>' + w + '</span><span class="word-result-icon">—</span></div>';
+    }).join('');
+    buildScoreboard('p-sb-turnend', data);
+
+  } else if (data.phase === 'end') {
+    showView('end');
+    document.getElementById('p-end-winner').textContent = data.winner || '';
+    document.getElementById('p-end-winner-sub').textContent = data.winnerSub || '';
+    var maxScore = Math.max.apply(null, data.scores);
+    var sorted = data.teams.map(function(name, i){
+      return { name: name, score: data.scores[i], members: data.teamMembers[i] };
+    }).sort(function(a,b){ return b.score - a.score; });
+    document.getElementById('p-final-scores').innerHTML = sorted.map(function(t) {
+      var isWinner = t.score === maxScore;
+      var membersHtml = t.members && t.members.length
+        ? '<div class="final-row-members">' + t.members.join(', ') + '</div>' : '';
+      return '<div class="final-row' + (isWinner ? ' winner' : '') + '">' +
+        '<div><div>' + (isWinner ? '🏆 ' : '') + t.name + '</div>' + membersHtml + '</div>' +
+        '<div>' + t.score + ' נקודות</div></div>';
+    }).join('');
+  }
+}
+
+function poll() {
+  try {
+    var raw = localStorage.getItem('aliasPublic');
+    if (!raw) {
+      document.getElementById('view-waiting').style.display = '';
+      document.querySelectorAll('.view').forEach(function(v){ v.classList.remove('active'); });
+      return;
+    }
+    var data = JSON.parse(raw);
+    if (data.ts !== lastTs) {
+      lastTs = data.ts;
+      render(data);
+    }
+  } catch(e) {}
+}
+
+setInterval(poll, 800);
+poll();
+</script>
+</body>
+</html>
