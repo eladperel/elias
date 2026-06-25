@@ -3,93 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>אליאס — מנחה</title>
+<title>אליאס</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 16px; }
-.container { width: 100%; max-width: 480px; }
+.container { width: 100%; max-width: 500px; }
 .screen { display: none; }
 .screen.active { display: block; }
 
-.setup-logo { text-align: center; padding: 28px 0 22px; }
-.setup-logo h1 { font-size: 72px; font-weight: 900; letter-spacing: 4px; color: #fff; text-shadow: 3px 3px 0 rgba(0,0,0,0.25); }
-.setup-logo p { color: rgba(255,255,255,0.75); font-size: 15px; margin-top: 4px; }
-
-.section-card { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); }
-.section-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+/* ── shared ── */
+.logo-center { text-align: center; padding: 32px 0 24px; }
+.logo-center h1 { font-size: 72px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.25); }
+.logo-center p  { color: rgba(255,255,255,0.7); font-size: 15px; margin-top: 4px; }
+.card { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); }
+.card-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
 label { font-size: 13px; color: rgba(255,255,255,0.7); display: block; margin-bottom: 5px; }
 input[type=text], input[type=number], textarea, select { width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; color: #fff; font-size: 14px; font-family: 'Heebo', Arial, sans-serif; margin-bottom: 4px; }
 input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.4); }
-select option { background: #c0392b; color: #fff; }
+select option { background: #c0392b; }
 textarea { height: 120px; resize: vertical; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
-.team-count-row { display: flex; gap: 8px; margin-bottom: 14px; }
-.tc-btn { flex: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 2px solid rgba(255,255,255,0.25); border-radius: 10px; color: rgba(255,255,255,0.7); font-size: 18px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; }
-.tc-btn.active { background: #fff; border-color: #fff; color: #e31e24; }
-.team-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.team-input-wrap label { font-size: 12px; }
-
-.participants-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
-.participants-input-row input { margin-bottom: 0; flex: 1; }
-.add-btn { padding: 10px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 10px; color: #fff; font-size: 20px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; }
-.participants-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; min-height: 36px; }
-.participant-chip { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 12px; font-size: 14px; font-weight: 700; }
-.chip-remove { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 16px; cursor: pointer; padding: 0; }
-.shuffle-btn { width: 100%; padding: 10px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; }
-.teams-reveal { margin-top: 12px; }
-.team-reveal-row { background: rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; }
-.team-reveal-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 4px; text-transform: uppercase; }
-.team-reveal-members { display: flex; flex-wrap: wrap; gap: 6px; }
-.team-member-chip { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 10px; font-size: 13px; font-weight: 700; }
-
-/* room bar */
-.room-bar { display: none; background: rgba(0,0,0,0.28); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; border: 2px dashed rgba(255,255,255,0.4); }
-.room-bar.visible { display: block; }
-.room-bar-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.room-bar-left { }
-.room-bar-label { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-.room-bar-code { font-size: 44px; font-weight: 900; letter-spacing: 10px; line-height: 1; }
-.room-qr { width: 90px; height: 90px; border-radius: 10px; background: #fff; flex-shrink: 0; }
-.copy-btn { display: block; width: 100%; padding: 11px; background: #fff; color: #e31e24; border: none; border-radius: 10px; font-size: 14px; font-weight: 900; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; text-align: center; }
-
-.btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; text-align: center; margin-bottom: 10px; transition: transform 0.1s; }
+.btn { display: block; width: 100%; padding: 15px; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; text-align: center; margin-bottom: 10px; }
 .btn:active { transform: scale(0.97); }
 .btn-white   { background: #fff; color: #e31e24; }
+.btn-outline { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.35); }
 .btn-correct { background: #fff; color: #27ae60; flex: 1; font-size: 16px; font-weight: 900; }
 .btn-skip    { background: rgba(0,0,0,0.25); color: #fff; flex: 1; font-size: 16px; font-weight: 700; border: 1px solid rgba(255,255,255,0.3); }
 
-.scoreboard { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
-.score-col { text-align: center; min-width: 80px; flex: 1; }
-.score-name { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 700; margin-bottom: 2px; }
-.score-members { font-size: 11px; color: rgba(255,255,255,0.45); margin-bottom: 2px; }
-.score-val  { font-size: 44px; font-weight: 900; color: #fff; line-height: 1; }
-.score-col.active-team .score-val  { color: #ffe066; }
-.score-col.active-team .score-name { color: #ffe066; }
+/* ── firebase setup ── */
+.setup-steps { counter-reset: step; }
+.setup-step { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
+.setup-step-num { background: rgba(255,255,255,0.2); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 14px; flex-shrink: 0; }
+.setup-step-text { font-size: 14px; line-height: 1.55; color: rgba(255,255,255,0.85); }
+.setup-step-text a { color: #ffe066; }
+.setup-step-text code { background: rgba(0,0,0,0.3); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+.url-row { display: flex; gap: 8px; align-items: flex-start; }
+.url-row input { flex: 1; margin-bottom: 0; }
+.test-btn { padding: 10px 14px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; color: #fff; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; white-space: nowrap; }
+.test-result { font-size: 13px; min-height: 20px; margin-top: 6px; }
+.test-result.ok  { color: #2ecc71; }
+.test-result.err { color: #ff6b6b; }
 
-.turn-banner { text-align: center; padding: 24px 20px; background: rgba(0,0,0,0.18); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.2); }
-.turn-label { font-size: 13px; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.7); text-transform: uppercase; margin-bottom: 6px; }
-.turn-team  { font-size: 38px; font-weight: 900; }
-.turn-members { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 4px; }
-.turn-hint  { text-align: center; font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 16px; }
+/* ── room bar ── */
+.room-bar { display: none; background: rgba(0,0,0,0.28); border-radius: 16px; padding: 16px 18px; margin-bottom: 14px; border: 2px dashed rgba(255,255,255,0.4); }
+.room-bar.visible { display: block; }
+.room-bar-row { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.room-bar-text { flex: 1; }
+.room-bar-label { font-size: 11px; color: rgba(255,255,255,0.5); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 3px; }
+.room-bar-code  { font-size: 40px; font-weight: 900; letter-spacing: 10px; line-height: 1; }
+.room-qr { width: 88px; height: 88px; border-radius: 10px; background: #fff; flex-shrink: 0; }
+.copy-btn { display: block; width: 100%; padding: 10px; background: #fff; color: #e31e24; border: none; border-radius: 10px; font-size: 14px; font-weight: 900; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; }
 
-.timer-wrap { text-align: center; margin-bottom: 8px; }
-.timer-num  { font-size: 108px; font-weight: 900; line-height: 1; }
-.timer-num.low { animation: blink 0.5s infinite alternate; }
-@keyframes blink{from{opacity:1}to{opacity:0.5}}
+/* ── team count ── */
+.tc-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.tc-btn { flex: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 2px solid rgba(255,255,255,0.25); border-radius: 10px; color: rgba(255,255,255,0.7); font-size: 18px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; }
+.tc-btn.active { background: #fff; border-color: #fff; color: #e31e24; }
+.team-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ti-wrap label { font-size: 12px; }
+
+/* ── participants ── */
+.p-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.p-input-row input { margin-bottom: 0; flex: 1; }
+.add-btn { padding: 10px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 10px; color: #fff; font-size: 20px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; min-height: 36px; }
+.chip { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 12px; font-size: 14px; font-weight: 700; }
+.chip-x { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 16px; cursor: pointer; padding: 0; }
+.shuffle-btn { width: 100%; padding: 10px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; }
+.teams-reveal { margin-top: 12px; }
+.tr-row { background: rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; }
+.tr-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 4px; text-transform: uppercase; }
+.tr-members { display: flex; flex-wrap: wrap; gap: 6px; }
+.tr-chip { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 10px; font-size: 13px; font-weight: 700; }
+
+/* ── scoreboard ── */
+.scoreboard { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 14px 16px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); display: flex; flex-wrap: wrap; gap: 10px; }
+.sc-col { text-align: center; min-width: 78px; flex: 1; }
+.sc-name { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 700; margin-bottom: 2px; }
+.sc-mem  { font-size: 11px; color: rgba(255,255,255,0.45); margin-bottom: 2px; }
+.sc-val  { font-size: 42px; font-weight: 900; line-height: 1; }
+.sc-col.at .sc-val  { color: #ffe066; }
+.sc-col.at .sc-name { color: #ffe066; }
+
+/* ── turn / play ── */
+.turn-banner { text-align: center; padding: 22px 20px; background: rgba(0,0,0,0.18); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.2); }
+.tb-label { font-size: 13px; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.7); text-transform: uppercase; margin-bottom: 6px; }
+.tb-team  { font-size: 36px; font-weight: 900; }
+.tb-mem   { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 4px; }
+.turn-hint { text-align: center; font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 16px; }
+
+.timer-num { font-size: 106px; font-weight: 900; line-height: 1; text-align: center; margin-bottom: 6px; }
+.timer-num.low { animation: blink .5s infinite alternate; }
+@keyframes blink{from{opacity:1}to{opacity:.5}}
 .timer-bar-bg { background: rgba(0,0,0,0.2); border-radius: 6px; height: 6px; margin-bottom: 16px; }
-.timer-bar    { height: 6px; border-radius: 6px; background: #fff; transition: width 0.9s linear; }
+.timer-bar    { height: 6px; border-radius: 6px; background: #fff; transition: width .9s linear; }
 .timer-bar.low { background: rgba(255,255,255,0.5); }
 
-.word-card { background: #fff; border-radius: 20px; padding: 40px 24px; text-align: center; margin-bottom: 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.2); }
-.word-text  { font-size: 50px; font-weight: 900; color: #e31e24; line-height: 1.2; }
-.word-count { font-size: 12px; color: #aaa; margin-top: 10px; }
+.word-card { background: #fff; border-radius: 20px; padding: 38px 24px; text-align: center; margin-bottom: 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.2); }
+.word-text  { font-size: 48px; font-weight: 900; color: #e31e24; line-height: 1.2; }
+.word-count { font-size: 12px; color: #aaa; margin-top: 8px; }
 
 .action-row { display: flex; gap: 10px; margin-bottom: 14px; }
 .action-row .btn { margin-bottom: 0; padding: 18px 12px; }
 
-.log-wrap { max-height: 150px; overflow-y: auto; }
+.log-wrap { max-height: 140px; overflow-y: auto; }
 .log-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 12px; border-radius: 8px; margin-bottom: 4px; font-size: 14px; }
 .log-item.correct { background: rgba(255,255,255,0.15); }
 .log-item.skip    { background: rgba(0,0,0,0.15); }
@@ -97,121 +114,207 @@ textarea { height: 120px; resize: vertical; }
 .log-item.correct .log-tag { background: #fff; color: #27ae60; }
 .log-item.skip    .log-tag { background: rgba(0,0,0,0.3); color: rgba(255,255,255,0.8); }
 
-.summary-card { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 20px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); }
-.summary-pts { font-size: 48px; font-weight: 900; }
-.summary-sub { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 14px; margin-top: 2px; }
-.summary-list { max-height: 180px; overflow-y: auto; }
-.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.12); font-size: 14px; }
+/* ── summary / end ── */
+.summary-card { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 18px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); }
+.sum-pts { font-size: 46px; font-weight: 900; }
+.sum-sub { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 14px; margin-top: 2px; }
+.sum-list { max-height: 180px; overflow-y: auto; }
+.sum-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.12); font-size: 14px; }
 
-.end-wrap { text-align: center; padding: 30px 0 20px; }
-.trophy { font-size: 80px; margin-bottom: 12px; }
-.winner-name { font-size: 40px; font-weight: 900; }
-.winner-sub  { font-size: 15px; color: rgba(255,255,255,0.7); margin-top: 6px; margin-bottom: 24px; }
+.end-wrap { text-align: center; padding: 28px 0 18px; }
+.trophy { font-size: 78px; margin-bottom: 12px; }
+.winner-name { font-size: 38px; font-weight: 900; }
+.winner-sub  { font-size: 15px; color: rgba(255,255,255,0.7); margin-top: 6px; margin-bottom: 22px; }
 .end-scores { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); }
-.end-score-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 16px; }
-.end-score-row:last-child { border-bottom: none; }
-.end-score-row.winner { color: #ffe066; font-weight: 900; font-size: 18px; }
-.end-members { font-size: 12px; color: rgba(255,255,255,0.5); }
+.es-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 4px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 16px; }
+.es-row:last-child { border-bottom: none; }
+.es-row.winner { color: #ffe066; font-weight: 900; font-size: 18px; }
+.es-mem { font-size: 12px; color: rgba(255,255,255,0.5); }
+
+/* ── player view ── */
+.waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 70vh; text-align: center; }
+.waiting-logo { font-size: 70px; font-weight: 900; letter-spacing: 4px; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); margin-bottom: 16px; }
+.waiting-sub { font-size: 18px; color: rgba(255,255,255,0.7); }
+.dots { display: flex; gap: 8px; justify-content: center; margin-top: 22px; }
+.dot { width: 10px; height: 10px; background: rgba(255,255,255,0.6); border-radius: 50%; animation: db 1.2s infinite ease-in-out; }
+.dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
+@keyframes db{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
+
+.topbar { background: rgba(0,0,0,0.2); border-radius: 14px; padding: 11px 16px; margin-bottom: 14px; display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(255,255,255,0.15); }
+.topbar-logo  { font-size: 20px; font-weight: 900; letter-spacing: 2px; }
+.topbar-phase { font-size: 11px; color: rgba(255,255,255,0.6); font-weight: 700; text-transform: uppercase; }
+
+.p-scoreboard { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+.p-sc-card { flex: 1; min-width: 85px; background: rgba(0,0,0,0.18); border-radius: 13px; padding: 10px; text-align: center; border: 2px solid transparent; }
+.p-sc-card.at { border-color: #ffe066; background: rgba(255,224,102,0.12); }
+.p-sc-name { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.7); margin-bottom: 2px; }
+.p-sc-mem  { font-size: 10px; color: rgba(255,255,255,0.4); margin-bottom: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.p-sc-val  { font-size: 36px; font-weight: 900; line-height: 1; }
+.p-sc-card.at .p-sc-val  { color: #ffe066; }
+.p-sc-card.at .p-sc-name { color: #ffe066; }
+
+.p-turn-card { background: rgba(0,0,0,0.2); border-radius: 18px; padding: 20px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); text-align: center; }
+.p-turn-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 5px; }
+.p-turn-team  { font-size: 30px; font-weight: 900; }
+.p-turn-mem   { font-size: 13px; color: rgba(255,255,255,0.6); margin-top: 3px; }
+.p-wait { background: rgba(0,0,0,0.18); border-radius: 13px; padding: 16px; text-align: center; border: 1px solid rgba(255,255,255,0.15); font-size: 15px; color: rgba(255,255,255,0.6); }
+
+.p-timer { font-size: 108px; font-weight: 900; line-height: 1; text-align: center; margin-bottom: 6px; }
+.p-timer.low { animation: blink .5s infinite alternate; }
+.p-timer-bg { background: rgba(0,0,0,0.2); border-radius: 6px; height: 8px; margin-bottom: 14px; }
+.p-timer-bar { height: 8px; border-radius: 6px; background: rgba(255,255,255,0.8); transition: width 1.5s linear; }
+.p-timer-bar.low { background: rgba(255,255,255,0.4); }
+
+.word-hidden { background: rgba(0,0,0,0.2); border-radius: 18px; padding: 28px 20px; text-align: center; margin-bottom: 14px; border: 2px dashed rgba(255,255,255,0.2); }
+.wh-icon { font-size: 46px; margin-bottom: 9px; }
+.wh-text { font-size: 18px; font-weight: 700; color: rgba(255,255,255,0.6); }
+.wh-sub  { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 5px; }
+
+.counters { display: flex; gap: 10px; margin-bottom: 14px; }
+.c-box { flex: 1; background: rgba(0,0,0,0.18); border-radius: 13px; padding: 12px 10px; text-align: center; border: 1px solid rgba(255,255,255,0.15); }
+.c-label { font-size: 10px; color: rgba(255,255,255,0.55); margin-bottom: 3px; font-weight: 700; text-transform: uppercase; }
+.c-val { font-size: 36px; font-weight: 900; }
+.c-val.g { color: #2ecc71; } .c-val.r { color: #ff6b6b; } .c-val.w { color: rgba(255,255,255,0.5); }
+
+.words-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+.wg-card { border-radius: 9px; padding: 8px 11px; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+.wg-card.ok  { background: rgba(46,204,113,0.2); border: 1px solid rgba(46,204,113,0.4); }
+.wg-card.sk  { background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.2); color: rgba(255,255,255,0.5); }
+
+.p-final { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 14px; border: 1px solid rgba(255,255,255,0.2); }
+.pf-row { display: flex; justify-content: space-between; align-items: center; padding: 9px 4px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 15px; }
+.pf-row:last-child { border-bottom: none; }
+.pf-row.win { color: #ffe066; font-weight: 900; font-size: 17px; }
+.pf-mem { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 2px; }
 </style>
 </head>
 <body>
-
-<div class="room-bar" id="room-bar">
-  <div class="room-bar-top">
-    <div class="room-bar-left">
-      <div class="room-bar-label">קוד לשחקנים</div>
-      <div class="room-bar-code" id="room-bar-code">——</div>
-    </div>
-    <img class="room-qr" id="room-qr" src="" alt="QR" />
-  </div>
-  <button class="copy-btn" onclick="copyLink()" id="copy-btn">📋 העתק קישור לשחקנים</button>
-</div>
-
 <div class="container">
 
-<div id="screen-setup" class="screen active">
-  <div class="setup-logo"><h1>אליאס</h1><p>ממשק מנחה</p></div>
+<!-- ══════════════════════════════════════
+     FIREBASE SETUP (first time only)
+══════════════════════════════════════ -->
+<div id="screen-fbsetup" class="screen">
+  <div class="logo-center"><h1>אליאס</h1><p>הגדרה חד-פעמית</p></div>
+  <div class="card">
+    <div class="card-title">🔥 חיבור Firebase — 3 דקות</div>
+    <div class="setup-steps">
+      <div class="setup-step"><div class="setup-step-num">1</div><div class="setup-step-text">עבור ל-<a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a> וצור פרויקט חדש (בחר שם, דלג על Analytics)</div></div>
+      <div class="setup-step"><div class="setup-step-num">2</div><div class="setup-step-text">בפרויקט → תפריט שמאל → <strong>Realtime Database</strong> → <strong>Create database</strong> → בחר <code>Start in test mode</code> → Enable</div></div>
+      <div class="setup-step"><div class="setup-step-num">3</div><div class="setup-step-text">העתק את כתובת ה-Database שמופיעה בראש הדף (נראית כך: <code>https://שם-הפרויקט-default-rtdb.firebaseio.com</code>)</div></div>
+    </div>
+    <label>הדבק את כתובת ה-Database:</label>
+    <div class="url-row">
+      <input type="text" id="fb-url-input" placeholder="https://my-project-default-rtdb.firebaseio.com" />
+      <button class="test-btn" onclick="testFirebase()">בדוק</button>
+    </div>
+    <div class="test-result" id="test-result"></div>
+  </div>
+  <button class="btn btn-white" id="fb-save-btn" onclick="saveFirebase()" disabled>שמור והמשך ▶</button>
+</div>
 
-  <div class="section-card">
-    <div class="section-title">מילות המשחק</div>
+<!-- ══════════════════════════════════════
+     HOST — SETUP
+══════════════════════════════════════ -->
+<div id="screen-setup" class="screen">
+  <div class="logo-center"><h1>אליאס</h1><p>ממשק מנחה</p></div>
+
+  <div class="card">
+    <div class="card-title">מילות המשחק</div>
     <textarea id="words-input" placeholder="הדבק מילים כאן — שורה אחת לכל מילה&#10;מחשב&#10;ירח&#10;ארנב&#10;..."></textarea>
   </div>
 
-  <div class="section-card">
-    <div class="section-title">מספר קבוצות</div>
-    <div class="team-count-row">
-      <button class="tc-btn" onclick="setTeamCount(2)">2</button>
-      <button class="tc-btn active" onclick="setTeamCount(3)">3</button>
-      <button class="tc-btn" onclick="setTeamCount(4)">4</button>
-      <button class="tc-btn" onclick="setTeamCount(5)">5</button>
-      <button class="tc-btn" onclick="setTeamCount(6)">6</button>
+  <div class="card">
+    <div class="card-title">מספר קבוצות</div>
+    <div class="tc-row">
+      <button class="tc-btn" onclick="setTC(2)">2</button>
+      <button class="tc-btn active" onclick="setTC(3)">3</button>
+      <button class="tc-btn" onclick="setTC(4)">4</button>
+      <button class="tc-btn" onclick="setTC(5)">5</button>
+      <button class="tc-btn" onclick="setTC(6)">6</button>
     </div>
-    <div class="section-title">שמות קבוצות</div>
+    <div class="card-title">שמות קבוצות</div>
     <div class="team-inputs" id="team-inputs"></div>
   </div>
 
-  <div class="section-card">
-    <div class="section-title">משתתפים (אופציונלי)</div>
-    <div class="participants-input-row">
-      <input type="text" id="participant-input" placeholder="שם אחד, או הדבק רשימה..." onkeydown="if(event.key==='Enter') addParticipant()" onpaste="handlePaste(event)" />
-      <button class="add-btn" onclick="addParticipant()">+</button>
+  <div class="card">
+    <div class="card-title">משתתפים (אופציונלי)</div>
+    <div class="p-input-row">
+      <input type="text" id="pname" placeholder="שם אחד, או הדבק רשימה..." onkeydown="if(event.key==='Enter')addP()" onpaste="handlePaste(event)" />
+      <button class="add-btn" onclick="addP()">+</button>
     </div>
-    <div class="participants-list" id="participants-list"></div>
-    <button class="shuffle-btn" onclick="shuffleParticipants()" id="shuffle-btn" style="display:none">🔀 חלק רנדומלית לקבוצות</button>
+    <div class="chips" id="chips"></div>
+    <button class="shuffle-btn" id="shuffle-btn" style="display:none" onclick="shuffleP()">🔀 חלק רנדומלית לקבוצות</button>
     <div class="teams-reveal" id="teams-reveal"></div>
   </div>
 
-  <div class="section-card">
-    <div class="section-title">הגדרות</div>
+  <div class="card">
+    <div class="card-title">הגדרות</div>
     <div class="grid2">
       <div><label>זמן לסיבוב (שניות)</label><input type="number" id="round-time" value="60" min="15" max="180" /></div>
       <div><label>עונש על דילוג</label>
-        <select id="skip-penalty">
-          <option value="-1">-1 נקודה</option>
-          <option value="0" selected>ללא עונש</option>
-        </select>
+        <select id="skip-penalty"><option value="-1">-1 נקודה</option><option value="0" selected>ללא עונש</option></select>
       </div>
     </div>
   </div>
 
   <button class="btn btn-white" id="start-btn" onclick="initGame()">▶ התחל משחק</button>
+  <button class="btn btn-outline" onclick="showScreen('screen-fbsetup')">⚙ שנה הגדרות Firebase</button>
 </div>
 
+<!-- ══════════════════════════════════════
+     HOST — room bar (always visible once game starts)
+══════════════════════════════════════ -->
+<div class="room-bar" id="room-bar">
+  <div class="room-bar-row">
+    <div class="room-bar-text">
+      <div class="room-bar-label">קוד חדר לשחקנים</div>
+      <div class="room-bar-code" id="room-bar-code">——</div>
+    </div>
+    <img class="room-qr" id="room-qr" src="" alt="QR" />
+  </div>
+  <button class="copy-btn" id="copy-btn" onclick="copyLink()">📋 העתק קישור לשחקנים</button>
+</div>
+
+<!-- HOST — TURN START -->
 <div id="screen-turn-start" class="screen">
   <div class="turn-banner">
-    <div class="turn-label">תור</div>
-    <div class="turn-team" id="turn-team-name">—</div>
-    <div class="turn-members" id="turn-members"></div>
+    <div class="tb-label">תור</div>
+    <div class="tb-team" id="tb-team">—</div>
+    <div class="tb-mem"  id="tb-mem"></div>
   </div>
-  <div class="scoreboard" id="sb-turnstart"></div>
+  <div class="scoreboard" id="sb-ts"></div>
   <p class="turn-hint">המסביר מסביר — המנחש מנחש!</p>
   <button class="btn btn-white" onclick="startRound()">🚀 התחל סיבוב!</button>
 </div>
 
+<!-- HOST — PLAYING -->
 <div id="screen-playing" class="screen">
-  <div class="timer-wrap"><div class="timer-num" id="timer-display">60</div></div>
+  <div class="timer-num" id="timer-disp">60</div>
   <div class="timer-bar-bg"><div class="timer-bar" id="timer-bar" style="width:100%"></div></div>
   <div class="word-card">
-    <div class="word-text" id="current-word">—</div>
-    <div class="word-count" id="words-left-count"></div>
+    <div class="word-text"  id="cur-word">—</div>
+    <div class="word-count" id="words-left"></div>
   </div>
   <div class="action-row">
     <button class="btn btn-correct" onclick="markCorrect()">✓ ניחשו!</button>
-    <button class="btn btn-skip" onclick="skipWord()">⟶ דלג</button>
+    <button class="btn btn-skip"    onclick="skipWord()">⟶ דלג</button>
   </div>
   <div class="log-wrap" id="round-log"></div>
 </div>
 
+<!-- HOST — TURN END -->
 <div id="screen-turn-end" class="screen">
   <div class="summary-card">
-    <div class="summary-pts" id="turn-pts">+0 נקודות</div>
-    <div class="summary-sub" id="turn-sub"></div>
-    <div class="summary-list" id="turn-list"></div>
+    <div class="sum-pts" id="sum-pts">+0 נקודות</div>
+    <div class="sum-sub" id="sum-sub"></div>
+    <div class="sum-list" id="sum-list"></div>
   </div>
-  <div class="scoreboard" id="sb-turnend"></div>
-  <button class="btn btn-white" id="next-turn-btn" onclick="nextTurn()">תור הבא ▶</button>
+  <div class="scoreboard" id="sb-te"></div>
+  <button class="btn btn-white" id="next-btn" onclick="nextTurn()">תור הבא ▶</button>
 </div>
 
+<!-- HOST — END -->
 <div id="screen-end" class="screen">
   <div class="end-wrap">
     <div class="trophy">🏆</div>
@@ -222,268 +325,493 @@ textarea { height: 120px; resize: vertical; }
   <button class="btn btn-white" onclick="resetGame()">▶ משחק חדש</button>
 </div>
 
+<!-- ══════════════════════════════════════
+     PLAYER — WAITING
+══════════════════════════════════════ -->
+<div id="screen-p-waiting" class="screen">
+  <div class="waiting">
+    <div class="waiting-logo">אליאס</div>
+    <div class="waiting-sub" id="p-wait-text">מתחבר למשחק...</div>
+    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  </div>
 </div>
+
+<!-- PLAYER — TURN START -->
+<div id="screen-p-turnstart" class="screen">
+  <div class="topbar"><div class="topbar-logo">אליאס</div><div class="topbar-phase">הכנה לסיבוב</div></div>
+  <div class="p-scoreboard" id="p-sb-ts"></div>
+  <div class="p-turn-card">
+    <div class="p-turn-label">תור</div>
+    <div class="p-turn-team" id="p-turn-team">—</div>
+    <div class="p-turn-mem"  id="p-turn-mem"></div>
+  </div>
+  <div class="p-wait">🎯 ממתין למנחה להתחיל את הסיבוב...</div>
+</div>
+
+<!-- PLAYER — PLAYING -->
+<div id="screen-p-playing" class="screen">
+  <div class="topbar"><div class="topbar-logo">אליאס</div><div class="topbar-phase" id="p-phase-label">משחק</div></div>
+  <div class="p-timer" id="p-timer">60</div>
+  <div class="p-timer-bg"><div class="p-timer-bar" id="p-timer-bar" style="width:100%"></div></div>
+  <div class="word-hidden">
+    <div class="wh-icon">🙈</div>
+    <div class="wh-text">המנחה מסביר עכשיו...</div>
+    <div class="wh-sub">המילה מוסתרת ממך</div>
+  </div>
+  <div class="counters">
+    <div class="c-box"><div class="c-label">ניחשו</div><div class="c-val g" id="p-correct">0</div></div>
+    <div class="c-box"><div class="c-label">דילגו</div><div class="c-val r" id="p-skip">0</div></div>
+    <div class="c-box"><div class="c-label">נותרו</div><div class="c-val w" id="p-wl">—</div></div>
+  </div>
+  <div class="p-scoreboard" id="p-sb-play"></div>
+</div>
+
+<!-- PLAYER — TURN END -->
+<div id="screen-p-turnend" class="screen">
+  <div class="topbar"><div class="topbar-logo">אליאס</div><div class="topbar-phase">סוף סיבוב</div></div>
+  <div style="text-align:center;margin-bottom:14px">
+    <div style="font-size:52px;font-weight:900" id="p-sum-pts">+0</div>
+    <div style="font-size:14px;color:rgba(255,255,255,0.7);margin-top:4px" id="p-sum-sub"></div>
+  </div>
+  <div class="words-grid" id="p-words-grid"></div>
+  <div class="p-scoreboard" id="p-sb-te"></div>
+</div>
+
+<!-- PLAYER — END -->
+<div id="screen-p-end" class="screen">
+  <div class="topbar"><div class="topbar-logo">אליאס</div><div class="topbar-phase">סוף המשחק</div></div>
+  <div style="text-align:center;padding:28px 0 16px">
+    <div style="font-size:76px">🏆</div>
+    <div style="font-size:36px;font-weight:900;margin-top:10px" id="p-winner"></div>
+    <div style="font-size:14px;color:rgba(255,255,255,0.7);margin-top:4px" id="p-winner-sub"></div>
+  </div>
+  <div class="p-final" id="p-final"></div>
+</div>
+
+</div><!-- /container -->
 <script>
-var STORE = 'https://www.jsonstore.io/';
-var selectedTeamCount = 3;
+/* ══════════════ CONFIG ══════════════ */
+var FB_URL = localStorage.getItem('alias_fb_url') || '';
+
+/* ══════════════ FIREBASE HELPERS ══════════════ */
+function fbPath(room) { return FB_URL.replace(/\/$/, '') + '/alias/' + room + '.json'; }
+
+function fbWrite(room, data) {
+  return fetch(fbPath(room), {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+}
+
+function fbRead(room) {
+  return fetch(fbPath(room)).then(function(r){ return r.json(); });
+}
+
+/* ══════════════ SETUP SCREEN ══════════════ */
+function testFirebase() {
+  var url = document.getElementById('fb-url-input').value.trim().replace(/\/$/, '');
+  var res = document.getElementById('test-result');
+  var btn = document.getElementById('fb-save-btn');
+  res.textContent = '⏳ בודק...'; res.className = 'test-result';
+  fetch(url + '/alias_test.json', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ok: true })
+  }).then(function(r){
+    if (!r.ok) throw new Error('status ' + r.status);
+    res.textContent = '✓ חיבור תקין!';
+    res.className = 'test-result ok';
+    btn.disabled = false;
+    btn.setAttribute('data-url', url);
+  }).catch(function(e){
+    res.textContent = '✗ כתובת שגויה או Firebase לא מוגדר כ-test mode';
+    res.className = 'test-result err';
+    btn.disabled = true;
+  });
+}
+
+function saveFirebase() {
+  var url = document.getElementById('fb-save-btn').getAttribute('data-url');
+  if (!url) return;
+  FB_URL = url;
+  localStorage.setItem('alias_fb_url', url);
+  showScreen('screen-setup');
+}
+
+/* ══════════════ UTILS ══════════════ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+function genCode() {
+  var c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var s = '';
+  for (var i = 0; i < 5; i++) s += c[Math.floor(Math.random() * c.length)];
+  return s;
+}
+
+function getParam(name) {
+  return new URLSearchParams(window.location.search).get(name) || '';
+}
+
+/* ══════════════ HOST GAME STATE ══════════════ */
+var selectedTC = 3;
 var participants = [];
-var assignedTeamMembers = [];
+var assignedTM = [];
 var roomCode = '';
 var playersUrl = '';
 
-var state = {
+var S = {
   words:[], used:[], scores:[], teams:[], teamMembers:[],
   currentTeam:0, roundTime:60, skipPenalty:0,
   timer:null, timeLeft:60, totalTime:60,
   roundCorrect:[], roundSkipped:[], currentWord:null
 };
 
-function genCode() {
-  var c = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  var s = '';
-  for (var i = 0; i < 6; i++) s += c[Math.floor(Math.random() * c.length)];
-  return s;
-}
-
-function initGame() {
-  var raw = document.getElementById('words-input').value.trim();
-  var words = raw.split('\n').map(function(w){ return w.trim(); }).filter(function(w){ return w.length > 0; });
-  if (words.length < 5) { alert('נדרשות לפחות 5 מילים!'); return; }
-
-  var btn = document.getElementById('start-btn');
-  btn.disabled = true; btn.textContent = '⏳ יוצר חדר...';
-
-  roomCode = genCode();
-  playersUrl = 'https://eladperel.github.io/elias/players.html?room=' + roomCode;
-
-  // Write initial state to verify connectivity
-  fetch(STORE + roomCode, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ phase: 'waiting' })
-  }).then(function() {
-    btn.disabled = false; btn.textContent = '▶ התחל משחק';
-    showRoomBar();
-    startGame(words);
-  }).catch(function(e) {
-    btn.disabled = false; btn.textContent = '▶ התחל משחק';
-    alert('שגיאת חיבור לאינטרנט: ' + e.message);
-  });
-}
-
-function showRoomBar() {
-  document.getElementById('room-bar-code').textContent = roomCode;
-  var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=90x90&data=' + encodeURIComponent(playersUrl);
-  document.getElementById('room-qr').src = qrUrl;
-  document.getElementById('room-bar').classList.add('visible');
-}
-
-function copyLink() {
-  navigator.clipboard.writeText(playersUrl).catch(function(){});
-  var btn = document.getElementById('copy-btn');
-  btn.textContent = '✓ הועתק!';
-  setTimeout(function(){ btn.textContent = '📋 העתק קישור לשחקנים'; }, 2000);
-}
-
 function broadcast(phase) {
   if (!roomCode) return;
   var pub = {
     phase: phase,
-    teams: state.teams, teamMembers: state.teamMembers,
-    scores: state.scores, currentTeam: state.currentTeam,
-    timeLeft: state.timeLeft, totalTime: state.totalTime,
-    correctCount: state.roundCorrect.length,
-    skipCount: state.roundSkipped.length,
-    wordsLeft: state.words.filter(function(w){ return state.used.indexOf(w) === -1; }).length,
-    roundCorrectWords:  phase === 'turn-end' ? state.roundCorrect.slice()  : [],
-    roundSkippedWords:  phase === 'turn-end' ? state.roundSkipped.slice()  : [],
+    teams: S.teams, teamMembers: S.teamMembers,
+    scores: S.scores, currentTeam: S.currentTeam,
+    timeLeft: S.timeLeft, totalTime: S.totalTime,
+    correctCount: S.roundCorrect.length,
+    skipCount: S.roundSkipped.length,
+    wordsLeft: S.words.filter(function(w){ return S.used.indexOf(w)===-1; }).length,
+    roundCorrectWords: phase==='turn-end' ? S.roundCorrect.slice() : [],
+    roundSkippedWords: phase==='turn-end' ? S.roundSkipped.slice() : [],
     winner: null, winnerSub: null
   };
   if (phase === 'end') {
-    var mx = Math.max.apply(null, state.scores);
-    var ws = state.teams.filter(function(t,i){ return state.scores[i] === mx; });
-    pub.winner = ws.length === 1 ? ws[0] + ' ניצחו!' : 'תיקו!';
-    pub.winnerSub = mx + ' נקודות';
+    var mx = Math.max.apply(null, S.scores);
+    var ws = S.teams.filter(function(t,i){ return S.scores[i]===mx; });
+    pub.winner = ws.length===1 ? ws[0]+' ניצחו!' : 'תיקו!';
+    pub.winnerSub = mx+' נקודות';
   }
-  fetch(STORE + roomCode, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(pub)
-  });
+  fbWrite(roomCode, pub);
 }
 
-/* ── setup helpers ── */
-function setTeamCount(n) {
-  selectedTeamCount = n;
+/* ══════════════ HOST SETUP HELPERS ══════════════ */
+function setTC(n) {
+  selectedTC = n;
   document.querySelectorAll('.tc-btn').forEach(function(b,i){ b.classList.toggle('active',(i+2)===n); });
-  renderTeamInputs(n);
-  if (participants.length > 0) shuffleParticipants(); else document.getElementById('teams-reveal').innerHTML = '';
+  renderTI(n);
+  if (participants.length > 0) shuffleP(); else document.getElementById('teams-reveal').innerHTML = '';
 }
-function renderTeamInputs(n) {
+
+function renderTI(n) {
   var c = document.getElementById('team-inputs'), ex = [];
-  c.querySelectorAll('input').forEach(function(inp){ ex.push(inp.value); });
+  c.querySelectorAll('input').forEach(function(i){ ex.push(i.value); });
   c.innerHTML = '';
   for (var i = 0; i < n; i++) {
-    var w = document.createElement('div'); w.className = 'team-input-wrap';
-    var l = document.createElement('label'); l.textContent = 'קבוצה ' + (i+1);
-    var inp = document.createElement('input'); inp.type = 'text'; inp.id = 'team-name-' + i;
-    inp.value = ex[i] || ('קבוצה ' + (i+1));
-    inp.onchange = function(){ if (participants.length > 0) renderTeamsReveal(); };
+    var w = document.createElement('div'); w.className = 'ti-wrap';
+    var l = document.createElement('label'); l.textContent = 'קבוצה '+(i+1);
+    var inp = document.createElement('input'); inp.type='text'; inp.id='tn-'+i;
+    inp.value = ex[i] || ('קבוצה '+(i+1));
+    inp.onchange = function(){ if (participants.length>0) renderTR(); };
     w.appendChild(l); w.appendChild(inp); c.appendChild(w);
   }
 }
+
 function handlePaste(e) {
-  var text = (e.clipboardData || window.clipboardData).getData('text');
-  var names = text.split(/[\n,،;]+/).map(function(n){ return n.trim(); }).filter(function(n){ return n.length > 0; });
-  if (names.length <= 1) return;
+  var text = (e.clipboardData||window.clipboardData).getData('text');
+  var names = text.split(/[\n,،;]+/).map(function(n){ return n.trim(); }).filter(function(n){ return n.length>0; });
+  if (names.length<=1) return;
   e.preventDefault();
-  names.forEach(function(name){ if (participants.indexOf(name) === -1) participants.push(name); });
-  document.getElementById('participant-input').value = '';
-  renderParticipants();
+  names.forEach(function(n){ if (participants.indexOf(n)===-1) participants.push(n); });
+  document.getElementById('pname').value = '';
+  renderChips();
 }
-function addParticipant() {
-  var inp = document.getElementById('participant-input'), name = inp.value.trim();
-  if (!name) return;
-  participants.push(name); inp.value = ''; inp.focus(); renderParticipants();
+
+function addP() {
+  var inp = document.getElementById('pname'), n = inp.value.trim();
+  if (!n) return;
+  participants.push(n); inp.value=''; inp.focus(); renderChips();
 }
-function removeParticipant(i) {
-  participants.splice(i, 1); renderParticipants();
-  if (participants.length > 0) shuffleParticipants(); else document.getElementById('teams-reveal').innerHTML = '';
+
+function removeP(i) {
+  participants.splice(i,1); renderChips();
+  if (participants.length>0) shuffleP(); else document.getElementById('teams-reveal').innerHTML='';
 }
-function renderParticipants() {
-  var list = document.getElementById('participants-list'); list.innerHTML = '';
-  participants.forEach(function(name, i) {
-    var chip = document.createElement('div'); chip.className = 'participant-chip';
-    chip.innerHTML = name + '<button class="chip-remove" onclick="removeParticipant(' + i + ')">×</button>';
-    list.appendChild(chip);
+
+function renderChips() {
+  var c = document.getElementById('chips'); c.innerHTML='';
+  participants.forEach(function(n,i){
+    var chip = document.createElement('div'); chip.className='chip';
+    chip.innerHTML = n+'<button class="chip-x" onclick="removeP('+i+')">×</button>';
+    c.appendChild(chip);
   });
-  document.getElementById('shuffle-btn').style.display = participants.length >= selectedTeamCount ? 'block' : 'none';
-  if (participants.length >= selectedTeamCount) shuffleParticipants();
+  document.getElementById('shuffle-btn').style.display = participants.length>=selectedTC ? 'block':'none';
+  if (participants.length>=selectedTC) shuffleP();
 }
-function shuffleParticipants() {
+
+function shuffleP() {
   var arr = participants.slice();
-  for (var i = arr.length-1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)), t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
-  assignedTeamMembers = [];
-  for (var k = 0; k < selectedTeamCount; k++) assignedTeamMembers.push([]);
-  arr.forEach(function(name, idx){ assignedTeamMembers[idx % selectedTeamCount].push(name); });
-  renderTeamsReveal();
+  for (var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)),t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
+  assignedTM = [];
+  for (var k=0;k<selectedTC;k++) assignedTM.push([]);
+  arr.forEach(function(n,idx){ assignedTM[idx%selectedTC].push(n); });
+  renderTR();
 }
-function getTeamName(i){ var el = document.getElementById('team-name-' + i); return el ? el.value || ('קבוצה '+(i+1)) : 'קבוצה '+(i+1); }
-function renderTeamsReveal() {
-  var c = document.getElementById('teams-reveal'); if (!assignedTeamMembers.length) { c.innerHTML = ''; return; }
-  var html = '';
-  for (var i = 0; i < selectedTeamCount; i++) {
-    var m = assignedTeamMembers[i] || [];
-    html += '<div class="team-reveal-row"><div class="team-reveal-name">' + getTeamName(i) + '</div><div class="team-reveal-members">' + m.map(function(x){ return '<span class="team-member-chip">'+x+'</span>'; }).join('') + '</div></div>';
+
+function getTN(i){ var el=document.getElementById('tn-'+i); return el?el.value||('קבוצה '+(i+1)):'קבוצה '+(i+1); }
+
+function renderTR() {
+  var c = document.getElementById('teams-reveal'); if (!assignedTM.length){ c.innerHTML=''; return; }
+  var html='';
+  for (var i=0;i<selectedTC;i++){
+    var m = assignedTM[i]||[];
+    html+='<div class="tr-row"><div class="tr-name">'+getTN(i)+'</div><div class="tr-members">'+m.map(function(x){ return '<span class="tr-chip">'+x+'</span>'; }).join('')+'</div></div>';
   }
-  c.innerHTML = html;
+  c.innerHTML=html;
 }
-function renderScoreboard(cid, activeTeam) {
-  var el = document.getElementById(cid); el.innerHTML = '';
-  for (var i = 0; i < state.teams.length; i++) {
-    var col = document.createElement('div'); col.className = 'score-col' + (i === activeTeam ? ' active-team' : '');
-    var mh = state.teamMembers[i] && state.teamMembers[i].length ? '<div class="score-members">' + state.teamMembers[i].join(', ') + '</div>' : '';
-    col.innerHTML = '<div class="score-name">' + state.teams[i] + '</div>' + mh + '<div class="score-val">' + state.scores[i] + '</div>';
+
+function renderSB(cid, activeTeam) {
+  var el=document.getElementById(cid); el.innerHTML='';
+  for (var i=0;i<S.teams.length;i++){
+    var col=document.createElement('div'); col.className='sc-col'+(i===activeTeam?' at':'');
+    var mh=S.teamMembers[i]&&S.teamMembers[i].length?'<div class="sc-mem">'+S.teamMembers[i].join(', ')+'</div>':'';
+    col.innerHTML='<div class="sc-name">'+S.teams[i]+'</div>'+mh+'<div class="sc-val">'+S.scores[i]+'</div>';
     el.appendChild(col);
   }
 }
-function shuffle(arr){ for (var i = arr.length-1; i > 0; i--) { var j = Math.floor(Math.random()*(i+1)), t = arr[i]; arr[i] = arr[j]; arr[j] = t; } return arr; }
-function showScreen(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); }); document.getElementById('screen-'+id).classList.add('active'); }
+
+function shuffle(arr){ for(var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)),t=arr[i]; arr[i]=arr[j]; arr[j]=t; } return arr; }
+
+/* ══════════════ HOST GAME FLOW ══════════════ */
+function initGame() {
+  var raw = document.getElementById('words-input').value.trim();
+  var words = raw.split('\n').map(function(w){ return w.trim(); }).filter(function(w){ return w.length>0; });
+  if (words.length<5){ alert('נדרשות לפחות 5 מילים!'); return; }
+
+  var btn=document.getElementById('start-btn');
+  btn.disabled=true; btn.textContent='⏳ מתחיל...';
+
+  roomCode = genCode();
+  var dbUrlEncoded = encodeURIComponent(FB_URL.replace(/\/$/,''));
+  playersUrl = 'https://eladperel.github.io/elias/?room='+roomCode+'&db='+dbUrlEncoded;
+
+  fbWrite(roomCode, { phase:'waiting' }).then(function(){
+    btn.disabled=false; btn.textContent='▶ התחל משחק';
+    document.getElementById('room-bar-code').textContent = roomCode;
+    document.getElementById('room-qr').src = 'https://api.qrserver.com/v1/create-qr-code/?size=88x88&data='+encodeURIComponent(playersUrl);
+    document.getElementById('room-bar').classList.add('visible');
+    startGame(words);
+  }).catch(function(e){
+    btn.disabled=false; btn.textContent='▶ התחל משחק';
+    alert('שגיאת חיבור ל-Firebase: '+e.message);
+  });
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(playersUrl).catch(function(){});
+  var b=document.getElementById('copy-btn');
+  b.textContent='✓ הועתק!';
+  setTimeout(function(){ b.textContent='📋 העתק קישור לשחקנים'; },2000);
+}
 
 function startGame(words) {
-  state.words = shuffle(words.slice()); state.used = []; state.teams = []; state.teamMembers = [];
-  for (var i = 0; i < selectedTeamCount; i++) {
-    state.teams.push(getTeamName(i));
-    state.teamMembers.push(assignedTeamMembers[i] ? assignedTeamMembers[i].slice() : []);
+  S.words=shuffle(words.slice()); S.used=[]; S.teams=[]; S.teamMembers=[];
+  for (var i=0;i<selectedTC;i++){
+    S.teams.push(getTN(i));
+    S.teamMembers.push(assignedTM[i]?assignedTM[i].slice():[]);
   }
-  state.scores = state.teams.map(function(){ return 0; });
-  state.roundTime  = parseInt(document.getElementById('round-time').value) || 60;
-  state.totalTime  = state.roundTime;
-  state.skipPenalty = parseInt(document.getElementById('skip-penalty').value);
-  state.currentTeam = 0;
+  S.scores=S.teams.map(function(){ return 0; });
+  S.roundTime=parseInt(document.getElementById('round-time').value)||60;
+  S.totalTime=S.roundTime;
+  S.skipPenalty=parseInt(document.getElementById('skip-penalty').value);
+  S.currentTeam=0;
   showTurnStart();
 }
 
 function showTurnStart() {
-  var t = state.currentTeam;
-  document.getElementById('turn-team-name').textContent = state.teams[t];
-  var m = state.teamMembers[t];
-  document.getElementById('turn-members').textContent = m && m.length ? m.join(' · ') : '';
-  renderScoreboard('sb-turnstart', t);
+  var t=S.currentTeam;
+  document.getElementById('tb-team').textContent=S.teams[t];
+  var m=S.teamMembers[t]; document.getElementById('tb-mem').textContent=m&&m.length?m.join(' · '):'';
+  renderSB('sb-ts',t);
   broadcast('turn-start');
-  showScreen('turn-start');
-}
-function startRound() {
-  state.roundCorrect = []; state.roundSkipped = []; state.timeLeft = state.roundTime;
-  document.getElementById('round-log').innerHTML = '';
-  updateTimerDisplay(); showScreen('playing'); nextWord();
-  state.timer = setInterval(tick, 1000);
-}
-function tick() { state.timeLeft--; updateTimerDisplay(); broadcast('playing'); if (state.timeLeft <= 0) endRound(); }
-function updateTimerDisplay() {
-  var el = document.getElementById('timer-display'), bar = document.getElementById('timer-bar'), low = state.timeLeft <= 10;
-  el.textContent = state.timeLeft; el.className = 'timer-num' + (low ? ' low' : '');
-  bar.style.width = Math.max(0, state.timeLeft / state.totalTime * 100) + '%';
-  bar.className = 'timer-bar' + (low ? ' low' : '');
-}
-function nextWord() {
-  var av = state.words.filter(function(w){ return state.used.indexOf(w) === -1; });
-  document.getElementById('words-left-count').textContent = av.length + ' מילים נותרו';
-  if (av.length === 0) { endRound(); return; }
-  state.currentWord = av[Math.floor(Math.random() * av.length)];
-  state.used.push(state.currentWord);
-  document.getElementById('current-word').textContent = state.currentWord;
-  broadcast('playing');
-}
-function markCorrect() { if (!state.currentWord) return; state.roundCorrect.push(state.currentWord); addLog(state.currentWord, 'correct'); nextWord(); }
-function skipWord()    { if (!state.currentWord) return; state.roundSkipped.push(state.currentWord); addLog(state.currentWord, 'skip'); nextWord(); }
-function addLog(word, type) {
-  var div = document.createElement('div'); div.className = 'log-item ' + type;
-  div.innerHTML = '<span>' + word + '</span><span class="log-tag">' + (type==='correct' ? '✓ ניחשו' : '⟶ דלג') + '</span>';
-  document.getElementById('round-log').prepend(div);
-}
-function endRound() {
-  clearInterval(state.timer); state.timer = null;
-  var pts = state.roundCorrect.length + state.roundSkipped.length * state.skipPenalty;
-  state.scores[state.currentTeam] += pts;
-  document.getElementById('turn-pts').textContent = '+' + pts + ' נקודות';
-  document.getElementById('turn-sub').textContent = state.teams[state.currentTeam] + ' — ניחשו ' + state.roundCorrect.length + (state.roundSkipped.length ? ', דילגו ' + state.roundSkipped.length : '');
-  document.getElementById('turn-list').innerHTML =
-    state.roundCorrect.map(function(w){ return '<div class="summary-row"><span>'+w+'</span><span style="color:rgba(255,255,255,0.6);">✓</span></div>'; }).join('') +
-    state.roundSkipped.map(function(w){ return '<div class="summary-row"><span style="opacity:0.6;">'+w+'</span><span style="color:rgba(255,255,255,0.4);">—</span></div>'; }).join('');
-  renderScoreboard('sb-turnend', state.currentTeam);
-  var wl = state.words.filter(function(w){ return state.used.indexOf(w) === -1; }).length;
-  var btn = document.getElementById('next-turn-btn');
-  if (wl === 0) { btn.textContent = '🏁 סיים משחק'; btn.onclick = showEndGame; }
-  else          { btn.textContent = 'תור הבא ▶';    btn.onclick = nextTurn; }
-  broadcast('turn-end');
-  showScreen('turn-end');
-}
-function nextTurn() { state.currentTeam = (state.currentTeam + 1) % state.teams.length; showTurnStart(); }
-function showEndGame() {
-  var mx = Math.max.apply(null, state.scores);
-  var sorted = state.teams.map(function(name,i){ return {name:name,score:state.scores[i],members:state.teamMembers[i]}; }).sort(function(a,b){ return b.score-a.score; });
-  var ws = sorted.filter(function(t){ return t.score===mx; });
-  document.getElementById('winner-name').textContent = ws.length===1 ? ws[0].name+' ניצחו!' : 'תיקו!';
-  document.getElementById('winner-sub').textContent = mx + ' נקודות';
-  document.getElementById('end-scores').innerHTML = sorted.map(function(t){
-    var iw = t.score===mx, mh = t.members&&t.members.length ? '<div class="end-members">'+t.members.join(', ')+'</div>' : '';
-    return '<div class="end-score-row'+(iw?' winner':'')+'"><div><div>'+(iw?'🏆 ':'')+t.name+'</div>'+mh+'</div><div>'+t.score+' נקודות</div></div>';
-  }).join('');
-  broadcast('end');
-  showScreen('end');
-}
-function resetGame() {
-  roomCode = ''; playersUrl = '';
-  participants = []; assignedTeamMembers = [];
-  document.getElementById('participants-list').innerHTML = '';
-  document.getElementById('teams-reveal').innerHTML = '';
-  document.getElementById('shuffle-btn').style.display = 'none';
-  document.getElementById('room-bar').classList.remove('visible');
-  showScreen('setup');
+  showScreen('screen-turn-start');
 }
 
-setTeamCount(3);
+function startRound() {
+  S.roundCorrect=[]; S.roundSkipped=[]; S.timeLeft=S.roundTime;
+  document.getElementById('round-log').innerHTML='';
+  updateTimer(); showScreen('screen-playing'); nextWord();
+  S.timer=setInterval(tick,1000);
+}
+
+function tick(){ S.timeLeft--; updateTimer(); broadcast('playing'); if(S.timeLeft<=0) endRound(); }
+
+function updateTimer() {
+  var el=document.getElementById('timer-disp'),bar=document.getElementById('timer-bar'),low=S.timeLeft<=10;
+  el.textContent=S.timeLeft; el.className='timer-num'+(low?' low':'');
+  bar.style.width=Math.max(0,S.timeLeft/S.totalTime*100)+'%';
+  bar.className='timer-bar'+(low?' low':'');
+}
+
+function nextWord() {
+  var av=S.words.filter(function(w){ return S.used.indexOf(w)===-1; });
+  document.getElementById('words-left').textContent=av.length+' מילים נותרו';
+  if (av.length===0){ endRound(); return; }
+  S.currentWord=av[Math.floor(Math.random()*av.length)];
+  S.used.push(S.currentWord);
+  document.getElementById('cur-word').textContent=S.currentWord;
+  broadcast('playing');
+}
+
+function markCorrect(){ if(!S.currentWord)return; S.roundCorrect.push(S.currentWord); addLog(S.currentWord,'correct'); nextWord(); }
+function skipWord(){    if(!S.currentWord)return; S.roundSkipped.push(S.currentWord); addLog(S.currentWord,'skip'); nextWord(); }
+
+function addLog(word,type){
+  var d=document.createElement('div'); d.className='log-item '+type;
+  d.innerHTML='<span>'+word+'</span><span class="log-tag">'+(type==='correct'?'✓ ניחשו':'⟶ דלג')+'</span>';
+  document.getElementById('round-log').prepend(d);
+}
+
+function endRound() {
+  clearInterval(S.timer); S.timer=null;
+  var pts=S.roundCorrect.length+S.roundSkipped.length*S.skipPenalty;
+  S.scores[S.currentTeam]+=pts;
+  document.getElementById('sum-pts').textContent='+'+pts+' נקודות';
+  document.getElementById('sum-sub').textContent=S.teams[S.currentTeam]+' — ניחשו '+S.roundCorrect.length+(S.roundSkipped.length?', דילגו '+S.roundSkipped.length:'');
+  document.getElementById('sum-list').innerHTML=
+    S.roundCorrect.map(function(w){ return '<div class="sum-row"><span>'+w+'</span><span style="color:rgba(255,255,255,0.6)">✓</span></div>'; }).join('')+
+    S.roundSkipped.map(function(w){ return '<div class="sum-row"><span style="opacity:.6">'+w+'</span><span style="color:rgba(255,255,255,0.4)">—</span></div>'; }).join('');
+  renderSB('sb-te',S.currentTeam);
+  var wl=S.words.filter(function(w){ return S.used.indexOf(w)===-1; }).length;
+  var btn=document.getElementById('next-btn');
+  if (wl===0){ btn.textContent='🏁 סיים משחק'; btn.onclick=showEndGame; }
+  else        { btn.textContent='תור הבא ▶';   btn.onclick=nextTurn; }
+  broadcast('turn-end');
+  showScreen('screen-turn-end');
+}
+
+function nextTurn(){ S.currentTeam=(S.currentTeam+1)%S.teams.length; showTurnStart(); }
+
+function showEndGame() {
+  var mx=Math.max.apply(null,S.scores);
+  var sorted=S.teams.map(function(n,i){ return {name:n,score:S.scores[i],members:S.teamMembers[i]}; }).sort(function(a,b){ return b.score-a.score; });
+  var ws=sorted.filter(function(t){ return t.score===mx; });
+  document.getElementById('winner-name').textContent=ws.length===1?ws[0].name+' ניצחו!':'תיקו!';
+  document.getElementById('winner-sub').textContent=mx+' נקודות';
+  document.getElementById('end-scores').innerHTML=sorted.map(function(t){
+    var iw=t.score===mx,mh=t.members&&t.members.length?'<div class="es-mem">'+t.members.join(', ')+'</div>':'';
+    return '<div class="es-row'+(iw?' winner':'')+'"><div><div>'+(iw?'🏆 ':'')+t.name+'</div>'+mh+'</div><div>'+t.score+' נקודות</div></div>';
+  }).join('');
+  broadcast('end');
+  showScreen('screen-end');
+}
+
+function resetGame() {
+  roomCode=''; playersUrl='';
+  document.getElementById('room-bar').classList.remove('visible');
+  showScreen('screen-setup');
+}
+
+/* ══════════════ PLAYER MODE ══════════════ */
+var pollInterval = null;
+var lastPhase = null;
+var playerFbUrl = '';
+var playerRoom = '';
+
+function startPlayerMode(room, dbUrl) {
+  playerRoom = room;
+  playerFbUrl = decodeURIComponent(dbUrl).replace(/\/$/,'');
+  showScreen('screen-p-waiting');
+  document.getElementById('p-wait-text').textContent = 'ממתין למנחה...';
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(playerPoll, 1500);
+  playerPoll();
+}
+
+function playerPoll() {
+  fetch(playerFbUrl + '/alias/' + playerRoom + '.json')
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      if (data && data.phase && data.phase !== 'waiting') playerRender(data);
+    })
+    .catch(function(){});
+}
+
+function buildPSB(cid, data) {
+  var el=document.getElementById(cid); if(!el)return; el.innerHTML='';
+  for (var i=0;i<data.teams.length;i++){
+    var card=document.createElement('div');
+    card.className='p-sc-card'+(i===data.currentTeam?' at':'');
+    var mh=data.teamMembers[i]&&data.teamMembers[i].length?'<div class="p-sc-mem">'+data.teamMembers[i].join(', ')+'</div>':'<div class="p-sc-mem"></div>';
+    card.innerHTML='<div class="p-sc-name">'+data.teams[i]+'</div>'+mh+'<div class="p-sc-val">'+data.scores[i]+'</div>';
+    el.appendChild(card);
+  }
+}
+
+function playerRender(data) {
+  if (data.phase==='turn-start') {
+    showScreen('screen-p-turnstart');
+    document.getElementById('p-turn-team').textContent=data.teams[data.currentTeam];
+    var m=data.teamMembers[data.currentTeam];
+    document.getElementById('p-turn-mem').textContent=m&&m.length?m.join(' · '):'';
+    buildPSB('p-sb-ts',data);
+
+  } else if (data.phase==='playing') {
+    if (lastPhase!=='playing') showScreen('screen-p-playing');
+    var low=data.timeLeft<=10;
+    var te=document.getElementById('p-timer');
+    te.textContent=data.timeLeft; te.className='p-timer'+(low?' low':'');
+    var pct=Math.max(0,data.timeLeft/data.totalTime*100);
+    var bar=document.getElementById('p-timer-bar');
+    bar.style.width=pct+'%'; bar.className='p-timer-bar'+(low?' low':'');
+    document.getElementById('p-phase-label').textContent=data.teams[data.currentTeam]+' — בתור';
+    document.getElementById('p-correct').textContent=data.correctCount;
+    document.getElementById('p-skip').textContent=data.skipCount;
+    document.getElementById('p-wl').textContent=data.wordsLeft;
+    buildPSB('p-sb-play',data);
+
+  } else if (data.phase==='turn-end') {
+    if (lastPhase!=='turn-end') {
+      showScreen('screen-p-turnend');
+      document.getElementById('p-sum-pts').textContent='+'+data.correctCount+' נקודות';
+      document.getElementById('p-sum-sub').textContent=data.teams[data.currentTeam]+' — ניחשו '+data.correctCount+(data.skipCount?', דילגו '+data.skipCount:'');
+      document.getElementById('p-words-grid').innerHTML=
+        (data.roundCorrectWords||[]).map(function(w){ return '<div class="wg-card ok"><span>'+w+'</span><span>✓</span></div>'; }).join('')+
+        (data.roundSkippedWords||[]).map(function(w){ return '<div class="wg-card sk"><span>'+w+'</span><span>—</span></div>'; }).join('');
+      buildPSB('p-sb-te',data);
+    }
+
+  } else if (data.phase==='end') {
+    if (lastPhase!=='end') {
+      showScreen('screen-p-end');
+      document.getElementById('p-winner').textContent=data.winner||'';
+      document.getElementById('p-winner-sub').textContent=data.winnerSub||'';
+      var mx=Math.max.apply(null,data.scores);
+      var sorted=data.teams.map(function(n,i){ return {name:n,score:data.scores[i],members:data.teamMembers[i]}; }).sort(function(a,b){ return b.score-a.score; });
+      document.getElementById('p-final').innerHTML=sorted.map(function(t){
+        var iw=t.score===mx,mh=t.members&&t.members.length?'<div class="pf-mem">'+t.members.join(', ')+'</div>':'';
+        return '<div class="pf-row'+(iw?' win':'')+'"><div><div>'+(iw?'🏆 ':'')+t.name+'</div>'+mh+'</div><div>'+t.score+' נקודות</div></div>';
+      }).join('');
+      clearInterval(pollInterval);
+    }
+  }
+  lastPhase=data.phase;
+}
+
+/* ══════════════ INIT ══════════════ */
+var urlRoom = getParam('room');
+var urlDb   = getParam('db');
+
+if (urlRoom && urlDb) {
+  // Player mode - auto join
+  startPlayerMode(urlRoom, urlDb);
+} else if (!FB_URL) {
+  // First time - show Firebase setup
+  showScreen('screen-fbsetup');
+} else {
+  // Host mode
+  showScreen('screen-setup');
+}
+
+setTC(3);
 </script>
 </body>
 </html>
