@@ -235,8 +235,16 @@ textarea { height: 120px; resize: vertical; }
   </div>
 
   <div class="card">
-    <div class="card-title">מילות המשחק</div>
-    <textarea id="words-input" placeholder="הדבק מילים כאן — שורה אחת לכל מילה&#10;מחשב&#10;ירח&#10;ארנב&#10;..."></textarea>
+    <div class="card-title" style="display:flex;align-items:center;justify-content:space-between;">
+      <span>מילות המשחק</span>
+      <span id="words-count" style="font-size:13px;font-weight:400;opacity:0.7;">0 מילים</span>
+    </div>
+    <textarea id="words-input" placeholder="הדבק מילים כאן — שורה אחת לכל מילה&#10;מחשב&#10;ירח&#10;ארנב&#10;..." oninput="updateWordCount()"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="shuffle-btn" onclick="document.getElementById('words-file').click()" style="flex:1">📂 טען מקובץ</button>
+      <button class="shuffle-btn" onclick="downloadWords()" style="flex:1">💾 שמור לקובץ</button>
+    </div>
+    <input type="file" id="words-file" accept=".txt" style="display:none" onchange="loadWordsFile(event)">
   </div>
 
   <div class="card">
@@ -607,6 +615,34 @@ function renderSB(cid, activeTeam) {
     col.innerHTML='<div class="sc-name">'+S.teams[i]+'</div>'+mh+'<div class="sc-val">'+S.scores[i]+'</div>';
     el.appendChild(col);
   }
+}
+
+function updateWordCount() {
+  var raw = document.getElementById('words-input').value.trim();
+  var count = raw ? raw.split('\n').map(function(w){ return w.trim(); }).filter(function(w){ return w.length>0; }).length : 0;
+  document.getElementById('words-count').textContent = count + ' מילים';
+}
+
+function downloadWords() {
+  var raw = document.getElementById('words-input').value.trim();
+  if (!raw) { alert('אין מילים לשמור'); return; }
+  var blob = new Blob([raw], { type: 'text/plain;charset=utf-8' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'היגדים-אליאס.txt';
+  a.click();
+}
+
+function loadWordsFile(e) {
+  var file = e.target.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    document.getElementById('words-input').value = ev.target.result.trim();
+    updateWordCount();
+  };
+  reader.readAsText(file, 'UTF-8');
+  e.target.value = '';
 }
 
 function shuffle(arr){ for(var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)),t=arr[i]; arr[i]=arr[j]; arr[j]=t; } return arr; }
