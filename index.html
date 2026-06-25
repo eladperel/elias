@@ -4,15 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>אליאס — מנחה</title>
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap');
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'Heebo', Arial, sans-serif;
-  background: #e31e24; color: #fff;
-  min-height: 100vh; display: flex;
-  align-items: flex-start; justify-content: center; padding: 16px;
-}
+body { font-family: 'Heebo', Arial, sans-serif; background: #e31e24; color: #fff; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center; padding: 16px; }
 .container { width: 100%; max-width: 480px; }
 .screen { display: none; }
 .screen.active { display: block; }
@@ -21,97 +17,53 @@ body {
 .setup-logo h1 { font-size: 72px; font-weight: 900; letter-spacing: 4px; color: #fff; text-shadow: 3px 3px 0 rgba(0,0,0,0.25); }
 .setup-logo p { color: rgba(255,255,255,0.75); font-size: 15px; margin-top: 4px; }
 
-.section-card {
-  background: rgba(0,0,0,0.18); border-radius: 16px;
-  padding: 18px 20px; margin-bottom: 14px;
-  border: 1px solid rgba(255,255,255,0.2);
-}
-.section-title {
-  font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7);
-  text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px;
-}
+.section-card { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 18px 20px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); }
+.section-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
 label { font-size: 13px; color: rgba(255,255,255,0.7); display: block; margin-bottom: 5px; }
-input[type=text], input[type=number], textarea, select {
-  width: 100%; padding: 10px 12px;
-  background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3);
-  border-radius: 10px; color: #fff; font-size: 14px;
-  font-family: 'Heebo', Arial, sans-serif; margin-bottom: 4px;
-}
+input[type=text], input[type=number], textarea, select { width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; color: #fff; font-size: 14px; font-family: 'Heebo', Arial, sans-serif; margin-bottom: 4px; }
 input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.4); }
 select option { background: #c0392b; color: #fff; }
 textarea { height: 120px; resize: vertical; }
 .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
 .team-count-row { display: flex; gap: 8px; margin-bottom: 14px; }
-.tc-btn {
-  flex: 1; padding: 10px; background: rgba(0,0,0,0.2);
-  border: 2px solid rgba(255,255,255,0.25); border-radius: 10px;
-  color: rgba(255,255,255,0.7); font-size: 18px; font-weight: 900;
-  font-family: 'Heebo', Arial, sans-serif; cursor: pointer; text-align: center;
-}
+.tc-btn { flex: 1; padding: 10px; background: rgba(0,0,0,0.2); border: 2px solid rgba(255,255,255,0.25); border-radius: 10px; color: rgba(255,255,255,0.7); font-size: 18px; font-weight: 900; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; text-align: center; }
 .tc-btn.active { background: #fff; border-color: #fff; color: #e31e24; }
 .team-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .team-input-wrap label { font-size: 12px; }
 
 .participants-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
 .participants-input-row input { margin-bottom: 0; flex: 1; }
-.add-btn {
-  padding: 10px 16px; background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.4); border-radius: 10px;
-  color: #fff; font-size: 20px; font-weight: 700; cursor: pointer;
-  font-family: 'Heebo', Arial, sans-serif;
-}
+.add-btn { padding: 10px 16px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); border-radius: 10px; color: #fff; font-size: 20px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; }
 .participants-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; min-height: 36px; }
-.participant-chip {
-  display: flex; align-items: center; gap: 6px;
-  background: rgba(255,255,255,0.2); border-radius: 20px;
-  padding: 5px 12px; font-size: 14px; font-weight: 700;
-}
+.participant-chip { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.2); border-radius: 20px; padding: 5px 12px; font-size: 14px; font-weight: 700; }
 .chip-remove { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 16px; cursor: pointer; padding: 0; }
-.shuffle-btn {
-  width: 100%; padding: 10px; background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.3); border-radius: 10px;
-  color: #fff; font-size: 14px; font-weight: 700; cursor: pointer;
-  font-family: 'Heebo', Arial, sans-serif;
-}
+.shuffle-btn { width: 100%; padding: 10px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; }
 .teams-reveal { margin-top: 12px; }
 .team-reveal-row { background: rgba(255,255,255,0.12); border-radius: 10px; padding: 10px 14px; margin-bottom: 8px; }
 .team-reveal-name { font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
 .team-reveal-members { display: flex; flex-wrap: wrap; gap: 6px; }
 .team-member-chip { background: rgba(255,255,255,0.2); border-radius: 20px; padding: 3px 10px; font-size: 13px; font-weight: 700; }
 
-/* players screen link */
-.players-link {
-  background: rgba(255,255,255,0.12); border: 1px dashed rgba(255,255,255,0.4);
-  border-radius: 12px; padding: 14px 16px; margin-bottom: 14px;
-  display: flex; align-items: center; gap: 12px;
-}
-.players-link-icon { font-size: 28px; }
-.players-link-text { flex: 1; }
-.players-link-text strong { font-size: 15px; display: block; margin-bottom: 2px; }
-.players-link-text span { font-size: 12px; color: rgba(255,255,255,0.6); }
-.open-players-btn {
-  padding: 8px 14px; background: #fff; color: #e31e24;
-  border: none; border-radius: 8px; font-size: 13px; font-weight: 700;
-  cursor: pointer; font-family: 'Heebo', Arial, sans-serif; white-space: nowrap;
-}
+/* share link card */
+.share-card { background: rgba(0,0,0,0.25); border: 2px dashed rgba(255,255,255,0.4); border-radius: 14px; padding: 16px 18px; margin-bottom: 14px; }
+.share-card-title { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.share-row { display: flex; align-items: center; gap: 10px; }
+.room-code { font-size: 28px; font-weight: 900; letter-spacing: 4px; flex: 1; }
+.copy-btn { padding: 8px 14px; background: #fff; color: #e31e24; border: none; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: 'Heebo', Arial, sans-serif; white-space: nowrap; }
+.share-link-text { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 6px; word-break: break-all; }
+.conn-status { font-size: 11px; margin-top: 6px; }
+.conn-status.ok  { color: #2ecc71; }
+.conn-status.err { color: #ff6b6b; }
+.conn-status.wait { color: rgba(255,255,255,0.5); }
 
-.btn {
-  display: block; width: 100%; padding: 16px; border: none; border-radius: 14px;
-  font-size: 17px; font-weight: 700; font-family: 'Heebo', Arial, sans-serif;
-  cursor: pointer; text-align: center; margin-bottom: 10px; transition: transform 0.1s;
-}
+.btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; text-align: center; margin-bottom: 10px; transition: transform 0.1s; }
 .btn:active { transform: scale(0.97); }
 .btn-white   { background: #fff; color: #e31e24; }
 .btn-correct { background: #fff; color: #27ae60; flex: 1; font-size: 16px; font-weight: 900; }
 .btn-skip    { background: rgba(0,0,0,0.25); color: #fff; flex: 1; font-size: 16px; font-weight: 700; border: 1px solid rgba(255,255,255,0.3); }
 
-.scoreboard {
-  background: rgba(0,0,0,0.18); border-radius: 16px;
-  padding: 16px; margin-bottom: 14px;
-  border: 1px solid rgba(255,255,255,0.2);
-  display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
-}
+.scoreboard { background: rgba(0,0,0,0.18); border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.2); display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
 .score-col { text-align: center; min-width: 80px; flex: 1; }
 .score-name { font-size: 12px; color: rgba(255,255,255,0.7); font-weight: 700; margin-bottom: 2px; }
 .score-members { font-size: 11px; color: rgba(255,255,255,0.45); margin-bottom: 2px; }
@@ -119,11 +71,7 @@ textarea { height: 120px; resize: vertical; }
 .score-col.active-team .score-val  { color: #ffe066; }
 .score-col.active-team .score-name { color: #ffe066; }
 
-.turn-banner {
-  text-align: center; padding: 24px 20px;
-  background: rgba(0,0,0,0.18); border-radius: 20px; margin-bottom: 16px;
-  border: 1px solid rgba(255,255,255,0.2);
-}
+.turn-banner { text-align: center; padding: 24px 20px; background: rgba(0,0,0,0.18); border-radius: 20px; margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.2); }
 .turn-label { font-size: 13px; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.7); text-transform: uppercase; margin-bottom: 6px; }
 .turn-team  { font-size: 38px; font-weight: 900; color: #fff; }
 .turn-members { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 4px; }
@@ -132,15 +80,12 @@ textarea { height: 120px; resize: vertical; }
 .timer-wrap { text-align: center; margin-bottom: 8px; }
 .timer-num  { font-size: 108px; font-weight: 900; color: #fff; line-height: 1; }
 .timer-num.low { animation: blink 0.5s infinite alternate; }
-@keyframes blink { from { opacity:1; } to { opacity:0.5; } }
+@keyframes blink { from{opacity:1}to{opacity:0.5} }
 .timer-bar-bg { background: rgba(0,0,0,0.2); border-radius: 6px; height: 6px; margin-bottom: 16px; }
 .timer-bar    { height: 6px; border-radius: 6px; background: #fff; transition: width 0.9s linear; }
 .timer-bar.low { background: rgba(255,255,255,0.5); }
 
-.word-card {
-  background: #fff; border-radius: 20px; padding: 40px 24px;
-  text-align: center; margin-bottom: 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.2);
-}
+.word-card { background: #fff; border-radius: 20px; padding: 40px 24px; text-align: center; margin-bottom: 16px; box-shadow: 0 6px 24px rgba(0,0,0,0.2); }
 .word-text  { font-size: 50px; font-weight: 900; color: #e31e24; line-height: 1.2; }
 .word-count { font-size: 12px; color: #aaa; margin-top: 10px; }
 
@@ -177,10 +122,7 @@ textarea { height: 120px; resize: vertical; }
 
 <!-- SETUP -->
 <div id="screen-setup" class="screen active">
-  <div class="setup-logo">
-    <h1>אליאס</h1>
-    <p>ממשק מנחה</p>
-  </div>
+  <div class="setup-logo"><h1>אליאס</h1><p>ממשק מנחה</p></div>
 
   <div class="section-card">
     <div class="section-title">מילות המשחק</div>
@@ -214,12 +156,8 @@ textarea { height: 120px; resize: vertical; }
   <div class="section-card">
     <div class="section-title">הגדרות</div>
     <div class="grid2">
-      <div>
-        <label>זמן לסיבוב (שניות)</label>
-        <input type="number" id="round-time" value="60" min="15" max="180" />
-      </div>
-      <div>
-        <label>עונש על דילוג</label>
+      <div><label>זמן לסיבוב (שניות)</label><input type="number" id="round-time" value="60" min="15" max="180" /></div>
+      <div><label>עונש על דילוג</label>
         <select id="skip-penalty">
           <option value="-1">-1 נקודה</option>
           <option value="0" selected>ללא עונש</option>
@@ -228,16 +166,18 @@ textarea { height: 120px; resize: vertical; }
     </div>
   </div>
 
-  <div class="players-link">
-    <div class="players-link-icon">📺</div>
-    <div class="players-link-text">
-      <strong>ממשק שחקנים</strong>
-      <span>פתח בטאב נפרד על המסך של השחקנים</span>
+  <!-- share card (shown after connect) -->
+  <div class="share-card" id="share-card" style="display:none">
+    <div class="share-card-title">📺 קישור לשחקנים</div>
+    <div class="share-row">
+      <div class="room-code" id="room-code-display">——</div>
+      <button class="copy-btn" onclick="copyLink()">העתק קישור</button>
     </div>
-    <button class="open-players-btn" onclick="window.open('players.html','_blank')">פתח ↗</button>
+    <div class="share-link-text" id="share-link-text"></div>
+    <div class="conn-status wait" id="conn-status">מתחבר...</div>
   </div>
 
-  <button class="btn btn-white" onclick="startGame()">▶ התחל משחק</button>
+  <button class="btn btn-white" id="start-btn" onclick="initGame()">▶ התחל משחק</button>
 </div>
 
 <!-- TURN START -->
@@ -254,12 +194,8 @@ textarea { height: 120px; resize: vertical; }
 
 <!-- PLAYING -->
 <div id="screen-playing" class="screen">
-  <div class="timer-wrap">
-    <div class="timer-num" id="timer-display">60</div>
-  </div>
-  <div class="timer-bar-bg">
-    <div class="timer-bar" id="timer-bar" style="width:100%"></div>
-  </div>
+  <div class="timer-wrap"><div class="timer-num" id="timer-display">60</div></div>
+  <div class="timer-bar-bg"><div class="timer-bar" id="timer-bar" style="width:100%"></div></div>
   <div class="word-card">
     <div class="word-text" id="current-word">—</div>
     <div class="word-count" id="words-left-count"></div>
@@ -295,177 +231,99 @@ textarea { height: 120px; resize: vertical; }
 
 </div>
 <script>
+var BROKER = 'wss://broker.emqx.io:8084/mqtt';
 var selectedTeamCount = 3;
 var participants = [];
 var assignedTeamMembers = [];
+var mqttClient = null;
+var roomCode = '';
+var mqttReady = false;
 
 var state = {
-  words: [], used: [], scores: [],
-  teams: [], teamMembers: [],
-  currentTeam: 0, roundTime: 60, skipPenalty: 0,
-  timer: null, timeLeft: 60, totalTime: 60,
-  roundCorrect: [], roundSkipped: [],
-  currentWord: null
+  words:[], used:[], scores:[], teams:[], teamMembers:[],
+  currentTeam:0, roundTime:60, skipPenalty:0,
+  timer:null, timeLeft:60, totalTime:60,
+  roundCorrect:[], roundSkipped:[], currentWord:null
 };
 
-function savePublicState(phase) {
+function genCode() {
+  var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code = '';
+  for (var i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+function connectMQTT(onReady) {
+  roomCode = genCode();
+  var cid = 'alias_host_' + Math.random().toString(16).substr(2, 8);
+  mqttClient = mqtt.connect(BROKER, { clientId: cid, clean: true });
+  setConnStatus('wait', 'מתחבר לשרת...');
+  mqttClient.on('connect', function() {
+    mqttReady = true;
+    setConnStatus('ok', '✓ מחובר — שחקנים יכולים להצטרף');
+    if (onReady) onReady();
+  });
+  mqttClient.on('error', function() { setConnStatus('err', '✗ שגיאת חיבור — נסה שוב'); });
+  mqttClient.on('offline', function() { setConnStatus('err', '✗ אין חיבור'); });
+}
+
+function setConnStatus(cls, msg) {
+  var el = document.getElementById('conn-status');
+  el.className = 'conn-status ' + cls;
+  el.textContent = msg;
+}
+
+function publish(phase) {
+  if (!mqttClient || !mqttReady) return;
   var pub = {
-    phase: phase,
-    teams: state.teams,
-    teamMembers: state.teamMembers,
-    scores: state.scores,
-    currentTeam: state.currentTeam,
-    timeLeft: state.timeLeft,
-    totalTime: state.totalTime,
-    correctCount: state.roundCorrect.length,
-    skipCount: state.roundSkipped.length,
-    wordsLeft: state.words.filter(function(w){ return state.used.indexOf(w) === -1; }).length,
+    phase: phase, teams: state.teams, teamMembers: state.teamMembers,
+    scores: state.scores, currentTeam: state.currentTeam,
+    timeLeft: state.timeLeft, totalTime: state.totalTime,
+    correctCount: state.roundCorrect.length, skipCount: state.roundSkipped.length,
+    wordsLeft: state.words.filter(function(w){ return state.used.indexOf(w)===-1; }).length,
     roundCorrectWords: phase === 'turn-end' ? state.roundCorrect : [],
     roundSkippedWords: phase === 'turn-end' ? state.roundSkipped : [],
-    winner: null,
-    winnerSub: null,
-    ts: Date.now()
+    winner: null, winnerSub: null
   };
   if (phase === 'end') {
-    var maxScore = Math.max.apply(null, state.scores);
-    var winners = state.teams.filter(function(t, i){ return state.scores[i] === maxScore; });
-    pub.winner = winners.length === 1 ? winners[0] + ' ניצחו!' : 'תיקו!';
-    pub.winnerSub = maxScore + ' נקודות';
+    var mx = Math.max.apply(null, state.scores);
+    var ws = state.teams.filter(function(t,i){ return state.scores[i]===mx; });
+    pub.winner = ws.length===1 ? ws[0]+' ניצחו!' : 'תיקו!';
+    pub.winnerSub = mx + ' נקודות';
   }
-  try { localStorage.setItem('aliasPublic', JSON.stringify(pub)); } catch(e) {}
+  mqttClient.publish('alias/game/' + roomCode, JSON.stringify(pub), { retain: true, qos: 1 });
 }
 
-function setTeamCount(n) {
-  selectedTeamCount = n;
-  document.querySelectorAll('.tc-btn').forEach(function(b, i) {
-    b.classList.toggle('active', (i + 2) === n);
-  });
-  renderTeamInputs(n);
-  if (participants.length > 0) shuffleParticipants();
-  else document.getElementById('teams-reveal').innerHTML = '';
+function copyLink() {
+  var url = 'https://eladperel.github.io/elias/players.html?room=' + roomCode;
+  navigator.clipboard.writeText(url).catch(function(){});
+  var btn = document.querySelector('.copy-btn');
+  btn.textContent = 'הועתק!';
+  setTimeout(function(){ btn.textContent = 'העתק קישור'; }, 2000);
 }
 
-function renderTeamInputs(n) {
-  var container = document.getElementById('team-inputs');
-  var existing = [];
-  container.querySelectorAll('input').forEach(function(inp){ existing.push(inp.value); });
-  container.innerHTML = '';
-  for (var i = 0; i < n; i++) {
-    var wrap = document.createElement('div');
-    wrap.className = 'team-input-wrap';
-    var lbl = document.createElement('label');
-    lbl.textContent = 'קבוצה ' + (i + 1);
-    var inp = document.createElement('input');
-    inp.type = 'text'; inp.id = 'team-name-' + i;
-    inp.value = existing[i] || ('קבוצה ' + (i + 1));
-    inp.onchange = function() { if (participants.length > 0) renderTeamsReveal(); };
-    wrap.appendChild(lbl); wrap.appendChild(inp); container.appendChild(wrap);
-  }
-}
-
-function handlePaste(e) {
-  var text = (e.clipboardData || window.clipboardData).getData('text');
-  var names = text.split(/[\n,،;]+/).map(function(n){ return n.trim(); }).filter(function(n){ return n.length > 0; });
-  if (names.length <= 1) return;
-  e.preventDefault();
-  names.forEach(function(name){ if (participants.indexOf(name) === -1) participants.push(name); });
-  document.getElementById('participant-input').value = '';
-  renderParticipants();
-}
-
-function addParticipant() {
-  var inp = document.getElementById('participant-input');
-  var name = inp.value.trim();
-  if (!name) return;
-  participants.push(name); inp.value = ''; inp.focus();
-  renderParticipants();
-}
-
-function removeParticipant(i) {
-  participants.splice(i, 1);
-  renderParticipants();
-  if (participants.length > 0) shuffleParticipants();
-  else document.getElementById('teams-reveal').innerHTML = '';
-}
-
-function renderParticipants() {
-  var list = document.getElementById('participants-list');
-  list.innerHTML = '';
-  participants.forEach(function(name, i) {
-    var chip = document.createElement('div');
-    chip.className = 'participant-chip';
-    chip.innerHTML = name + '<button class="chip-remove" onclick="removeParticipant(' + i + ')">×</button>';
-    list.appendChild(chip);
-  });
-  document.getElementById('shuffle-btn').style.display = participants.length >= selectedTeamCount ? 'block' : 'none';
-  if (participants.length >= selectedTeamCount) shuffleParticipants();
-}
-
-function shuffleParticipants() {
-  var arr = participants.slice();
-  for (var i = arr.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
-  }
-  assignedTeamMembers = [];
-  for (var k = 0; k < selectedTeamCount; k++) assignedTeamMembers.push([]);
-  arr.forEach(function(name, idx) { assignedTeamMembers[idx % selectedTeamCount].push(name); });
-  renderTeamsReveal();
-}
-
-function getTeamName(i) {
-  var el = document.getElementById('team-name-' + i);
-  return el ? el.value || ('קבוצה ' + (i + 1)) : 'קבוצה ' + (i + 1);
-}
-
-function renderTeamsReveal() {
-  var container = document.getElementById('teams-reveal');
-  if (!assignedTeamMembers.length) { container.innerHTML = ''; return; }
-  var html = '';
-  for (var i = 0; i < selectedTeamCount; i++) {
-    var members = assignedTeamMembers[i] || [];
-    html += '<div class="team-reveal-row"><div class="team-reveal-name">' + getTeamName(i) + '</div>' +
-      '<div class="team-reveal-members">' +
-      members.map(function(m){ return '<span class="team-member-chip">' + m + '</span>'; }).join('') +
-      '</div></div>';
-  }
-  container.innerHTML = html;
-}
-
-function renderScoreboard(containerId, activeTeam) {
-  var el = document.getElementById(containerId);
-  el.innerHTML = '';
-  for (var i = 0; i < state.teams.length; i++) {
-    var col = document.createElement('div');
-    col.className = 'score-col' + (i === activeTeam ? ' active-team' : '');
-    var membersHtml = state.teamMembers[i] && state.teamMembers[i].length
-      ? '<div class="score-members">' + state.teamMembers[i].join(', ') + '</div>' : '';
-    col.innerHTML = '<div class="score-name">' + state.teams[i] + '</div>' + membersHtml +
-                    '<div class="score-val">' + state.scores[i] + '</div>';
-    el.appendChild(col);
-  }
-}
-
-function shuffle(arr) {
-  for (var i = arr.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
-  }
-  return arr;
-}
-
-function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
-  document.getElementById('screen-' + id).classList.add('active');
-}
-
-function startGame() {
+function initGame() {
   var raw = document.getElementById('words-input').value.trim();
-  var words = raw.split('\n').map(function(w){ return w.trim(); }).filter(function(w){ return w.length > 0; });
+  var words = raw.split('\n').map(function(w){ return w.trim(); }).filter(function(w){ return w.length>0; });
   if (words.length < 5) { alert('נדרשות לפחות 5 מילים!'); return; }
+
+  document.getElementById('start-btn').disabled = true;
+  document.getElementById('start-btn').textContent = 'מתחבר...';
+  document.getElementById('share-card').style.display = 'block';
+
+  connectMQTT(function() {
+    document.getElementById('start-btn').disabled = false;
+    document.getElementById('start-btn').textContent = '▶ התחל משחק';
+    document.getElementById('room-code-display').textContent = roomCode;
+    var url = 'https://eladperel.github.io/elias/players.html?room=' + roomCode;
+    document.getElementById('share-link-text').textContent = url;
+    startGame(words);
+  });
+}
+
+function startGame(words) {
   state.words = shuffle(words.slice());
-  state.used = [];
-  state.teams = []; state.teamMembers = [];
+  state.used = []; state.teams = []; state.teamMembers = [];
   for (var i = 0; i < selectedTeamCount; i++) {
     state.teams.push(getTeamName(i));
     state.teamMembers.push(assignedTeamMembers[i] ? assignedTeamMembers[i].slice() : []);
@@ -478,138 +336,159 @@ function startGame() {
   showTurnStart();
 }
 
-function showTurnStart() {
-  var t = state.currentTeam;
-  document.getElementById('turn-team-name').textContent = state.teams[t];
-  var members = state.teamMembers[t];
-  document.getElementById('turn-members').textContent = members && members.length ? members.join(' · ') : '';
-  renderScoreboard('sb-turnstart', t);
-  savePublicState('turn-start');
+/* ── all the rest of game logic ── */
+function setTeamCount(n) {
+  selectedTeamCount = n;
+  document.querySelectorAll('.tc-btn').forEach(function(b,i){ b.classList.toggle('active',(i+2)===n); });
+  renderTeamInputs(n);
+  if (participants.length>0) shuffleParticipants(); else document.getElementById('teams-reveal').innerHTML='';
+}
+function renderTeamInputs(n) {
+  var c=document.getElementById('team-inputs'), ex=[];
+  c.querySelectorAll('input').forEach(function(inp){ ex.push(inp.value); });
+  c.innerHTML='';
+  for(var i=0;i<n;i++){
+    var w=document.createElement('div'); w.className='team-input-wrap';
+    var l=document.createElement('label'); l.textContent='קבוצה '+(i+1);
+    var inp=document.createElement('input'); inp.type='text'; inp.id='team-name-'+i;
+    inp.value=ex[i]||('קבוצה '+(i+1));
+    inp.onchange=function(){ if(participants.length>0) renderTeamsReveal(); };
+    w.appendChild(l); w.appendChild(inp); c.appendChild(w);
+  }
+}
+function handlePaste(e) {
+  var text=(e.clipboardData||window.clipboardData).getData('text');
+  var names=text.split(/[\n,،;]+/).map(function(n){ return n.trim(); }).filter(function(n){ return n.length>0; });
+  if(names.length<=1) return;
+  e.preventDefault();
+  names.forEach(function(name){ if(participants.indexOf(name)===-1) participants.push(name); });
+  document.getElementById('participant-input').value='';
+  renderParticipants();
+}
+function addParticipant() {
+  var inp=document.getElementById('participant-input'), name=inp.value.trim();
+  if(!name) return;
+  participants.push(name); inp.value=''; inp.focus(); renderParticipants();
+}
+function removeParticipant(i) {
+  participants.splice(i,1); renderParticipants();
+  if(participants.length>0) shuffleParticipants(); else document.getElementById('teams-reveal').innerHTML='';
+}
+function renderParticipants() {
+  var list=document.getElementById('participants-list'); list.innerHTML='';
+  participants.forEach(function(name,i){
+    var chip=document.createElement('div'); chip.className='participant-chip';
+    chip.innerHTML=name+'<button class="chip-remove" onclick="removeParticipant('+i+')">×</button>';
+    list.appendChild(chip);
+  });
+  document.getElementById('shuffle-btn').style.display=participants.length>=selectedTeamCount?'block':'none';
+  if(participants.length>=selectedTeamCount) shuffleParticipants();
+}
+function shuffleParticipants() {
+  var arr=participants.slice();
+  for(var i=arr.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)),t=arr[i]; arr[i]=arr[j]; arr[j]=t; }
+  assignedTeamMembers=[];
+  for(var k=0;k<selectedTeamCount;k++) assignedTeamMembers.push([]);
+  arr.forEach(function(name,idx){ assignedTeamMembers[idx%selectedTeamCount].push(name); });
+  renderTeamsReveal();
+}
+function getTeamName(i){ var el=document.getElementById('team-name-'+i); return el?el.value||('קבוצה '+(i+1)):'קבוצה '+(i+1); }
+function renderTeamsReveal(){
+  var c=document.getElementById('teams-reveal'); if(!assignedTeamMembers.length){c.innerHTML='';return;}
+  var html='';
+  for(var i=0;i<selectedTeamCount;i++){
+    var members=assignedTeamMembers[i]||[];
+    html+='<div class="team-reveal-row"><div class="team-reveal-name">'+getTeamName(i)+'</div><div class="team-reveal-members">'+members.map(function(m){ return '<span class="team-member-chip">'+m+'</span>'; }).join('')+'</div></div>';
+  }
+  c.innerHTML=html;
+}
+function renderScoreboard(cid, activeTeam){
+  var el=document.getElementById(cid); el.innerHTML='';
+  for(var i=0;i<state.teams.length;i++){
+    var col=document.createElement('div'); col.className='score-col'+(i===activeTeam?' active-team':'');
+    var mh=state.teamMembers[i]&&state.teamMembers[i].length?'<div class="score-members">'+state.teamMembers[i].join(', ')+'</div>':'';
+    col.innerHTML='<div class="score-name">'+state.teams[i]+'</div>'+mh+'<div class="score-val">'+state.scores[i]+'</div>';
+    el.appendChild(col);
+  }
+}
+function shuffle(arr){ for(var i=arr.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=arr[i];arr[i]=arr[j];arr[j]=t;} return arr; }
+function showScreen(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); }); document.getElementById('screen-'+id).classList.add('active'); }
+
+function showTurnStart(){
+  var t=state.currentTeam;
+  document.getElementById('turn-team-name').textContent=state.teams[t];
+  var m=state.teamMembers[t]; document.getElementById('turn-members').textContent=m&&m.length?m.join(' · '):'';
+  renderScoreboard('sb-turnstart',t);
+  publish('turn-start');
   showScreen('turn-start');
 }
-
-function startRound() {
-  state.roundCorrect = []; state.roundSkipped = [];
-  state.timeLeft = state.roundTime;
-  document.getElementById('round-log').innerHTML = '';
-  updateTimerDisplay();
-  showScreen('playing');
-  nextWord();
-  state.timer = setInterval(tick, 1000);
+function startRound(){
+  state.roundCorrect=[]; state.roundSkipped=[]; state.timeLeft=state.roundTime;
+  document.getElementById('round-log').innerHTML='';
+  updateTimerDisplay(); showScreen('playing'); nextWord();
+  state.timer=setInterval(tick,1000);
 }
-
-function tick() {
-  state.timeLeft--;
-  updateTimerDisplay();
-  savePublicState('playing');
-  if (state.timeLeft <= 0) endRound();
+function tick(){ state.timeLeft--; updateTimerDisplay(); publish('playing'); if(state.timeLeft<=0) endRound(); }
+function updateTimerDisplay(){
+  var el=document.getElementById('timer-display'),bar=document.getElementById('timer-bar'),low=state.timeLeft<=10;
+  el.textContent=state.timeLeft; el.className='timer-num'+(low?' low':'');
+  var pct=Math.max(0,(state.timeLeft/state.totalTime)*100);
+  bar.style.width=pct+'%'; bar.className='timer-bar'+(low?' low':'');
 }
-
-function updateTimerDisplay() {
-  var el = document.getElementById('timer-display');
-  var bar = document.getElementById('timer-bar');
-  var low = state.timeLeft <= 10;
-  el.textContent = state.timeLeft;
-  el.className = 'timer-num' + (low ? ' low' : '');
-  var pct = Math.max(0, (state.timeLeft / state.totalTime) * 100);
-  bar.style.width = pct + '%';
-  bar.className = 'timer-bar' + (low ? ' low' : '');
-}
-
-function nextWord() {
-  var available = state.words.filter(function(w){ return state.used.indexOf(w) === -1; });
-  document.getElementById('words-left-count').textContent = available.length + ' מילים נותרו';
-  if (available.length === 0) { endRound(); return; }
-  state.currentWord = available[Math.floor(Math.random() * available.length)];
+function nextWord(){
+  var av=state.words.filter(function(w){ return state.used.indexOf(w)===-1; });
+  document.getElementById('words-left-count').textContent=av.length+' מילים נותרו';
+  if(av.length===0){endRound();return;}
+  state.currentWord=av[Math.floor(Math.random()*av.length)];
   state.used.push(state.currentWord);
-  document.getElementById('current-word').textContent = state.currentWord;
-  savePublicState('playing');
+  document.getElementById('current-word').textContent=state.currentWord;
+  publish('playing');
 }
-
-function markCorrect() {
-  if (!state.currentWord) return;
-  state.roundCorrect.push(state.currentWord);
-  addLog(state.currentWord, 'correct');
-  nextWord();
-}
-
-function skipWord() {
-  if (!state.currentWord) return;
-  state.roundSkipped.push(state.currentWord);
-  addLog(state.currentWord, 'skip');
-  nextWord();
-}
-
-function addLog(word, type) {
-  var div = document.createElement('div');
-  div.className = 'log-item ' + type;
-  div.innerHTML = '<span>' + word + '</span><span class="log-tag">' + (type === 'correct' ? '✓ ניחשו' : '⟶ דלג') + '</span>';
+function markCorrect(){ if(!state.currentWord) return; state.roundCorrect.push(state.currentWord); addLog(state.currentWord,'correct'); nextWord(); }
+function skipWord(){ if(!state.currentWord) return; state.roundSkipped.push(state.currentWord); addLog(state.currentWord,'skip'); nextWord(); }
+function addLog(word,type){
+  var div=document.createElement('div'); div.className='log-item '+type;
+  div.innerHTML='<span>'+word+'</span><span class="log-tag">'+(type==='correct'?'✓ ניחשו':'⟶ דלג')+'</span>';
   document.getElementById('round-log').prepend(div);
 }
-
-function endRound() {
-  clearInterval(state.timer); state.timer = null;
-  var pts = state.roundCorrect.length + state.roundSkipped.length * state.skipPenalty;
-  state.scores[state.currentTeam] += pts;
-
-  document.getElementById('turn-pts').textContent = '+' + pts + ' נקודות';
-  document.getElementById('turn-sub').textContent =
-    state.teams[state.currentTeam] + ' — ניחשו ' + state.roundCorrect.length +
-    (state.roundSkipped.length ? ', דילגו ' + state.roundSkipped.length : '');
-  document.getElementById('turn-list').innerHTML =
-    state.roundCorrect.map(function(w){
-      return '<div class="summary-row"><span>' + w + '</span><span style="color:rgba(255,255,255,0.6);">✓</span></div>';
-    }).join('') +
-    state.roundSkipped.map(function(w){
-      return '<div class="summary-row"><span style="opacity:0.6;">' + w + '</span><span style="color:rgba(255,255,255,0.4);">—</span></div>';
-    }).join('');
-
-  renderScoreboard('sb-turnend', state.currentTeam);
-
-  var wordsLeft = state.words.filter(function(w){ return state.used.indexOf(w) === -1; }).length;
-  var btn = document.getElementById('next-turn-btn');
-  if (wordsLeft === 0) {
-    btn.textContent = '🏁 סיים משחק'; btn.onclick = showEndGame;
-  } else {
-    btn.textContent = 'תור הבא ▶'; btn.onclick = nextTurn;
-  }
-  savePublicState('turn-end');
+function endRound(){
+  clearInterval(state.timer); state.timer=null;
+  var pts=state.roundCorrect.length+state.roundSkipped.length*state.skipPenalty;
+  state.scores[state.currentTeam]+=pts;
+  document.getElementById('turn-pts').textContent='+'+pts+' נקודות';
+  document.getElementById('turn-sub').textContent=state.teams[state.currentTeam]+' — ניחשו '+state.roundCorrect.length+(state.roundSkipped.length?', דילגו '+state.roundSkipped.length:'');
+  document.getElementById('turn-list').innerHTML=
+    state.roundCorrect.map(function(w){ return '<div class="summary-row"><span>'+w+'</span><span style="color:rgba(255,255,255,0.6);">✓</span></div>'; }).join('')+
+    state.roundSkipped.map(function(w){ return '<div class="summary-row"><span style="opacity:0.6;">'+w+'</span><span style="color:rgba(255,255,255,0.4);">—</span></div>'; }).join('');
+  renderScoreboard('sb-turnend',state.currentTeam);
+  var wl=state.words.filter(function(w){ return state.used.indexOf(w)===-1; }).length;
+  var btn=document.getElementById('next-turn-btn');
+  if(wl===0){btn.textContent='🏁 סיים משחק';btn.onclick=showEndGame;}else{btn.textContent='תור הבא ▶';btn.onclick=nextTurn;}
+  publish('turn-end');
   showScreen('turn-end');
 }
-
-function nextTurn() {
-  state.currentTeam = (state.currentTeam + 1) % state.teams.length;
-  showTurnStart();
-}
-
-function showEndGame() {
-  var maxScore = Math.max.apply(null, state.scores);
-  var sorted = state.teams.map(function(name, i){
-    return { name: name, score: state.scores[i], members: state.teamMembers[i] };
-  }).sort(function(a, b){ return b.score - a.score; });
-  var winners = sorted.filter(function(t){ return t.score === maxScore; });
-  if (winners.length === 1) {
-    document.getElementById('winner-name').textContent = winners[0].name + ' ניצחו!';
-    document.getElementById('winner-sub').textContent = maxScore + ' נקודות';
-  } else {
-    document.getElementById('winner-name').textContent = 'תיקו!';
-    document.getElementById('winner-sub').textContent = winners.map(function(t){ return t.name; }).join(' ו') + ' עם ' + maxScore + ' נקודות';
-  }
-  document.getElementById('end-scores').innerHTML = sorted.map(function(t) {
-    var isWinner = t.score === maxScore;
-    var membersHtml = t.members && t.members.length ? '<div class="end-members">' + t.members.join(', ') + '</div>' : '';
-    return '<div class="end-score-row' + (isWinner ? ' winner' : '') + '"><div><div>' + (isWinner ? '🏆 ' : '') + t.name + '</div>' + membersHtml + '</div><div>' + t.score + ' נקודות</div></div>';
+function nextTurn(){ state.currentTeam=(state.currentTeam+1)%state.teams.length; showTurnStart(); }
+function showEndGame(){
+  var mx=Math.max.apply(null,state.scores);
+  var sorted=state.teams.map(function(name,i){ return{name:name,score:state.scores[i],members:state.teamMembers[i]}; }).sort(function(a,b){ return b.score-a.score; });
+  var ws=sorted.filter(function(t){ return t.score===mx; });
+  document.getElementById('winner-name').textContent=ws.length===1?ws[0].name+' ניצחו!':'תיקו!';
+  document.getElementById('winner-sub').textContent=mx+' נקודות';
+  document.getElementById('end-scores').innerHTML=sorted.map(function(t){
+    var iw=t.score===mx;
+    var mh=t.members&&t.members.length?'<div class="end-members">'+t.members.join(', ')+'</div>':'';
+    return '<div class="end-score-row'+(iw?' winner':'')+'"><div><div>'+(iw?'🏆 ':'')+t.name+'</div>'+mh+'</div><div>'+t.score+' נקודות</div></div>';
   }).join('');
-  savePublicState('end');
+  publish('end');
   showScreen('end');
 }
-
-function resetGame() {
-  participants = []; assignedTeamMembers = [];
-  document.getElementById('participants-list').innerHTML = '';
-  document.getElementById('teams-reveal').innerHTML = '';
-  document.getElementById('shuffle-btn').style.display = 'none';
-  try { localStorage.removeItem('aliasPublic'); } catch(e) {}
+function resetGame(){
+  if(mqttClient){ mqttClient.publish('alias/game/'+roomCode,'',{retain:true}); mqttClient.end(); mqttClient=null; mqttReady=false; }
+  participants=[]; assignedTeamMembers=[];
+  document.getElementById('participants-list').innerHTML='';
+  document.getElementById('teams-reveal').innerHTML='';
+  document.getElementById('shuffle-btn').style.display='none';
+  document.getElementById('share-card').style.display='none';
   showScreen('setup');
 }
 
