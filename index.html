@@ -57,6 +57,13 @@ textarea { height: 120px; resize: vertical; }
 .conn-status.err { color: #ff6b6b; }
 .conn-status.wait { color: rgba(255,255,255,0.5); }
 
+/* persistent room code bar */
+.room-bar { background: rgba(0,0,0,0.25); border-radius: 12px; padding: 10px 16px; margin-bottom: 14px; display: none; align-items: center; justify-content: space-between; gap: 10px; border: 1px solid rgba(255,255,255,0.2); }
+.room-bar.visible { display: flex; }
+.room-bar-code { font-size: 22px; font-weight: 900; letter-spacing: 5px; }
+.room-bar-label { font-size: 11px; color: rgba(255,255,255,0.5); }
+.room-bar-right { display: flex; align-items: center; gap: 8px; }
+
 .btn { display: block; width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 17px; font-weight: 700; font-family: 'Heebo', Arial, sans-serif; cursor: pointer; text-align: center; margin-bottom: 10px; transition: transform 0.1s; }
 .btn:active { transform: scale(0.97); }
 .btn-white   { background: #fff; color: #e31e24; }
@@ -118,6 +125,16 @@ textarea { height: 120px; resize: vertical; }
 </style>
 </head>
 <body>
+<div class="room-bar" id="room-bar">
+  <div>
+    <div class="room-bar-label">קוד חדר לשחקנים</div>
+    <div class="room-bar-code" id="room-bar-code">——</div>
+  </div>
+  <div class="room-bar-right">
+    <button class="copy-btn" onclick="copyLink()">העתק קישור</button>
+  </div>
+</div>
+
 <div class="container">
 
 <!-- SETUP -->
@@ -261,6 +278,8 @@ function connectMQTT(onReady) {
   mqttClient.on('connect', function() {
     mqttReady = true;
     setConnStatus('ok', '✓ מחובר — שחקנים יכולים להצטרף');
+    document.getElementById('room-bar-code').textContent = roomCode;
+    document.getElementById('room-bar').classList.add('visible');
     if (onReady) onReady();
   });
   mqttClient.on('error', function() { setConnStatus('err', '✗ שגיאת חיבור — נסה שוב'); });
@@ -489,6 +508,7 @@ function resetGame(){
   document.getElementById('teams-reveal').innerHTML='';
   document.getElementById('shuffle-btn').style.display='none';
   document.getElementById('share-card').style.display='none';
+  document.getElementById('room-bar').classList.remove('visible');
   showScreen('setup');
 }
 
