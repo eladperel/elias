@@ -216,7 +216,14 @@ function connectToHost(code) {
   document.getElementById('waiting-text').textContent = 'מתחבר למנחה...';
 
   var cid = 'alias-player-' + Math.random().toString(16).substr(2, 10);
-  myPeer = new Peer(cid);
+  var iceConfig = { iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:openrelay.metered.ca:80' },
+    { urls: 'turn:openrelay.metered.ca:80',               username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443',              username: 'openrelayproject', credential: 'openrelayproject' },
+    { urls: 'turn:openrelay.metered.ca:443?transport=tcp', username: 'openrelayproject', credential: 'openrelayproject' }
+  ]};
+  myPeer = new Peer(cid, { config: iceConfig });
 
   var timeout = setTimeout(function() {
     showError('לא הצלחנו להתחבר. בדוק את החיבור לאינטרנט.');
