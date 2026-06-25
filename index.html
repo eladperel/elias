@@ -620,7 +620,7 @@ function renderSB(cid, activeTeam) {
 function updateWordCount() {
   var raw = document.getElementById('words-input').value.trim();
   var count = raw ? raw.split('\n').map(function(w){ return w.trim(); }).filter(function(w){ return w.length>0; }).length : 0;
-  document.getElementById('words-count').textContent = count + ' מילים';
+  document.getElementById('words-count').textContent = count + ' היגדים';
 }
 
 function downloadWords() {
